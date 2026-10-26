@@ -46,7 +46,13 @@
   .mode-card{border-left:3px solid var(--primary);background:var(--panel2);border-radius:0 8px 8px 0;padding:12px 16px;margin:10px 0}
   .mode-card .flow{margin-top:8px;font-size:12.5px;color:var(--muted)}
   .mode-card .flow b{color:var(--amber)}
-  .mermaid{background:#fff;border-radius:8px;padding:16px;margin:10px 0;text-align:center}
+  .flow{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 0}
+  .flow-node{background:#1b2030;border:1px solid var(--primary);color:#e6e9f0;border-radius:8px;padding:8px 16px;font-size:12.5px;text-align:center;max-width:420px}
+  .flow-node.flow-diamond{background:rgba(110,139,255,.12);border-color:var(--accent);border-radius:14px;font-weight:600}
+  .flow-arrow{display:flex;flex-direction:column;align-items:center;color:var(--muted);font-size:12px;line-height:1.3}
+  .flow-arrow .flow-label{color:var(--amber);font-size:11.5px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:1px 9px;margin-bottom:1px}
+  .flow-arrow .flow-line{color:var(--primary);font-size:13px}
+  .flow-text{white-space:pre-wrap;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px;font-size:12px;color:var(--muted);font-family:ui-monospace,Menlo,monospace}
   .updated{position:fixed;right:18px;bottom:14px;font-size:11.5px;color:#555c70}
   </style>
 </head>
@@ -266,7 +272,7 @@
         "admin": "展示，只读"
       }
     ],
-    "stateMachine": "```mermaid\nflowchart TD\n  A[\"提交手机号+验证码+协议\"] --> B{\"统一用户平台\"}\n  B -->|新手机号| C[\"自动注册 · 使用中 FREE\"]\n  B -->|老手机号| D[\"直接登录 · 使用中 FREE\"]\n  C --> E[\"个人中心完善姓名+出生日期\"]\n  D --> E\n  E -->|任一缺失| F[\"横幅常驻+全站锁定<br/>仅姓名、出生日期修改可用\"]\n  F -->|两项补齐| G{\"按周岁判定\"}\n  E -->|两项已齐| G\n  G -->|满18岁| H[\"正常\"]\n  G -->|14至17岁| I[\"未成年模式 · 功能可用+琥珀标识\"]\n  G -->|不满14岁| J[\"限制使用 · 功能置灰+红条+红色标识\"]\n  J -->|改出生日期至合规年龄，豁免冷却| G\n  K[\"管理员操作\"] -->|小窗填原因禁用| L[\"禁用：不可登录+登录后功能全不可用\"]\n  L -->|恢复，无需理由| K\n  K -->|二次确认删除| M[\"账号移除\"]\n```\n\n**关键规则：**\n- 不存在登录环节的资料拦截；姓名、出生日期在登录后采集。\n- 年龄按**周岁**严格计算（生日当天满岁）；出生日期修改后重新判定。\n- 角色、出生日期正常修改受 30 天冷却限制（限制使用态改出生日期除外）。\n- 年龄模式是**功能使用层**约束，管理侧账号状态是**平台管理层**状态，两者独立判定、独立解除，可并存。",
+    "stateMachine": "```mermaid\nflowchart TD\n  A[\"提交手机号、验证码、协议\"] --> B{\"统一用户平台\"}\n  B -->|新手机号| C[\"自动注册，使用中 FREE\"]\n  B -->|老手机号| D[\"直接登录，使用中 FREE\"]\n  C --> E[\"完善姓名与出生日期\"]\n  D --> E\n  E -->|任一缺失| F[\"横幅常驻、全站锁定，仅两项修改可用\"]\n  F -->|两项补齐| G{\"按周岁判定\"}\n  E -->|两项已齐| G\n  G -->|满18岁| H[\"正常\"]\n  G -->|14至17岁| I[\"未成年模式，功能可用加琥珀标识\"]\n  G -->|不满14岁| J[\"限制使用，置灰加红条\"]\n  J -->|改至合规年龄，豁免冷却| G\n  K[\"管理员操作\"] -->|小窗填原因禁用| L[\"禁用，不可登录\"]\n  L -->|恢复，无需理由| K\n  K -->|二次确认删除| M[\"账号移除\"]\n```\n\n**关键规则：**\n- 不存在登录环节的资料拦截；姓名、出生日期在登录后采集。\n- 年龄按**周岁**严格计算（生日当天满岁）；出生日期修改后重新判定。\n- 角色、出生日期正常修改受 30 天冷却限制（限制使用态改出生日期除外）。\n- 年龄模式是**功能使用层**约束，管理侧账号状态是**平台管理层**状态，两者独立判定、独立解除，可并存。",
     "exceptions": [
       {
         "scene": "手机号格式错误",
@@ -869,7 +875,13 @@
   .mode-card{border-left:3px solid var(--primary);background:var(--panel2);border-radius:0 8px 8px 0;padding:12px 16px;margin:10px 0}
   .mode-card .flow{margin-top:8px;font-size:12.5px;color:var(--muted)}
   .mode-card .flow b{color:var(--amber)}
-  .mermaid{background:#fff;border-radius:8px;padding:16px;margin:10px 0;text-align:center}
+  .flow{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 0}
+  .flow-node{background:#1b2030;border:1px solid var(--primary);color:#e6e9f0;border-radius:8px;padding:8px 16px;font-size:12.5px;text-align:center;max-width:420px}
+  .flow-node.flow-diamond{background:rgba(110,139,255,.12);border-color:var(--accent);border-radius:14px;font-weight:600}
+  .flow-arrow{display:flex;flex-direction:column;align-items:center;color:var(--muted);font-size:12px;line-height:1.3}
+  .flow-arrow .flow-label{color:var(--amber);font-size:11.5px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:1px 9px;margin-bottom:1px}
+  .flow-arrow .flow-line{color:var(--primary);font-size:13px}
+  .flow-text{white-space:pre-wrap;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px;font-size:12px;color:var(--muted);font-family:ui-monospace,Menlo,monospace}
   .updated{position:fixed;right:18px;bottom:14px;font-size:11.5px;color:#555c70}
   `;
 
@@ -899,28 +911,116 @@
   }
   function statusTag(st){const m={'已完成':'done','开发中':'doing','规划中':'plan'};return '<span class="tag '+(m[st]||'plan')+'">'+esc(st)+'</span>';}
 
-  /* mermaid 懒加载：先显示等宽文本，加载成功后再尝试渲染；加载失败永不阻塞页面 */
-  let mermaidLoading=null;
-  function loadMermaid(){
-    if(window.mermaid) return Promise.resolve(window.mermaid);
-    if(mermaidLoading) return mermaidLoading;
-    mermaidLoading=new Promise((resolve,reject)=>{
-      const s=document.createElement('script');
-      s.src='https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js';
-      s.async=true; s.onload=()=>resolve(window.mermaid); s.onerror=()=>reject(new Error('mermaid cdn blocked'));
-      document.head.appendChild(s);
-      setTimeout(()=>reject(new Error('mermaid timeout')),6000);
-    }).catch(()=>{ window.__mermaidFailed=true; return null; });
-    return mermaidLoading;
-  }
-  function refreshMermaid(){
-    if(window.__mermaidFailed) return;
-    loadMermaid().then(lib=>{
-      if(!lib) return;
-      try{ lib.initialize({startOnLoad:false,theme:'default',securityLevel:'loose'}); }catch(e){}
-      const nodes=Array.prototype.slice.call(document.querySelectorAll('pre.mermaid[data-src]'));
-      if(nodes.length) lib.run({nodes:nodes}).catch(()=>{});
+  /* 纯 CSS 流程图：解析简易 flowchart TD 文本（节点 []判定{} + 边标签 |xx|），无外部依赖 */
+  function parseFlow(src){
+    const nodes={}, edges=[];
+    String(src).replace(/```mermaid|```|flowchart\s+TD/g,'').split('\n').forEach(line=>{
+      const t=line.trim(); if(!t) return;
+      const m=t.match(/^([A-Za-z0-9_]+)(\[\[|\[|\{\{|\{)?\s*"?([^"\]]*?)"?\s*(?:\]\]|\]|\}\}|\})?\s*-->\s*(?:\|([^|]*)\|\s*)?([A-Za-z0-9_]+)(\[\[|\[|\{\{|\{)?\s*"?([^"\]]*?)"?\s*(?:\]\]|\]|\}\}|\})?\s*$/);
+      if(!m) return;
+      const fid=m[1], fo=m[2], fLabel=m[3], el=m[4], tid=m[5], to=m[6], tLabel=m[7];
+      if(fo&&fLabel!=null) nodes[fid]={label:fLabel.trim(),type:(fo==='{'||fo==='{{')?'diamond':'box'};
+      if(to&&tLabel!=null&&tLabel.trim()) nodes[tid]={label:tLabel.trim(),type:(to==='{'||to==='{{')?'diamond':'box'};
+      edges.push({from:fid,to:tid,label:(el||'').trim()});
     });
+    return {nodes,edges};
+  }
+  function flowHtml(src){
+    const {nodes,edges}=parseFlow(src);
+    if(!edges.length) return '<pre class="flow-text">'+esc(String(src).replace(/```mermaid|```|flowchart\s+TD/g,'').trim())+'</pre>';
+
+    // 分层（最长路径），回环边标记为 back
+    const preds={}; edges.forEach(e=>(preds[e.to]=preds[e.to]||[]).push(e));
+    const layer={}, back=new Set(), state={};
+    const order=[]; edges.forEach(e=>{[e.from,e.to].forEach(id=>{if(!order.includes(id))order.push(id);});});
+    function dfs(id){
+      if(state[id]===2) return layer[id];
+      if(state[id]===1){ return null; } // 回环
+      state[id]=1;
+      let lvl=0;
+      (preds[id]||[]).forEach(e=>{
+        const pl=dfs(e.from);
+        if(pl===null){ back.add(e.from+'>'+e.to); return; }
+        lvl=Math.max(lvl,pl+1);
+      });
+      state[id]=2; layer[id]=lvl; return lvl;
+    }
+    order.forEach(id=>dfs(id));
+    const maxLayer=Math.max.apply(null,Object.values(layer));
+    const rows=Array.from({length:maxLayer+1},()=>[]);
+    order.forEach(id=>{ if(layer[id]!=null) rows[layer[id]].push(id); });
+
+    // 节点尺寸（中英文混排估算）
+    const measure=s=>{ let w=0; for(const ch of s){w += /[\u4e00-\u9fff，。、：；（）]/.test(ch)?13:7.5;} return {w:Math.max(76,Math.min(240,w+28)),h:36}; };
+    const NW=180, COL=250, ROWH=120, TOP=20;
+    const pos={};
+    rows.forEach((ids,r)=>{
+      ids.forEach((id,c)=>{
+        const n=nodes[id]||{label:id,type:'box'};
+        const sz=measure(n.label);
+        pos[id]={x:c*COL+(COL-sz.w)/2,y:r*ROWH+TOP,w:sz.w,h:sz.h,cx:c*COL+COL/2,cy:r*ROWH+TOP+sz.h/2};
+      });
+    });
+    const cols=Math.max.apply(null,rows.map(r=>r.length));
+    const svgW=Math.max(560,cols*COL+40);
+    const svgH=(maxLayer+1)*ROWH+30;
+
+    let s='<svg class="flow-svg" viewBox="0 0 '+svgW+' '+svgH+'" width="100%" style="max-width:'+svgW+'px" xmlns="http://www.w3.org/2000/svg">';
+    s+='<defs><marker id="arr" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#6e8bff"/></marker>'+
+       '<marker id="arrB" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#fbbf24"/></marker></defs>';
+    // 边
+    edges.forEach(e=>{
+      const a=pos[e.from],b=pos[e.to]; if(!a||!b) return;
+      const isBack=back.has(e.from+'>'+e.to);
+      const col=isBack?'#fbbf24':'#6e8bff';
+      if(isBack){
+        const x1=a.x+a.w+4,y1=a.cy,x2=b.x+b.w+4,y2=b.cy;
+        const mx=Math.max(x1,x2)+40;
+        s+='<path d="M'+x1+' '+y1+' C'+mx+' '+y1+' '+mx+' '+y2+' '+x2+' '+y2+'" fill="none" stroke="'+col+'" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arrB)"/>';
+        if(e.label) s+='<text x="'+(mx+4)+'" y="'+((y1+y2)/2)+'" fill="#fbbf24" font-size="11" text-anchor="middle" transform="rotate(-90 '+(mx+4)+' '+((y1+y2)/2)+')">'+esc(e.label)+'</text>';
+      }else{
+        const sameLayer=a.cy===b.cy;
+        if(sameLayer){
+          s+='<path d="M'+(a.x+a.w)+' '+a.cy+' L'+b.x+' '+b.cy+'" fill="none" stroke="'+col+'" stroke-width="1.5" marker-end="url(#arr)"/>';
+        }else{
+          const y1=a.y+a.h,y2=b.y,x1=a.cx,x2=b.cx;
+          const my=(y1+y2)/2;
+          s+='<path d="M'+x1+' '+y1+' C'+x1+' '+my+' '+x2+' '+my+' '+x2+' '+y2+'" fill="none" stroke="'+col+'" stroke-width="1.5" marker-end="url(#arr)"/>';
+        }
+        if(e.label){
+          const ly=a.y+a.h+(b.y-(a.y+a.h))/2;
+          const tw=e.label.length*12+10;
+          s+='<rect x="'+(a.cx-tw/2)+'" y="'+(ly-10)+'" width="'+tw+'" height="17" rx="8" fill="#171b25" stroke="#232838"/>';
+          s+='<text x="'+a.cx+'" y="'+ly+3+'" fill="#fbbf24" font-size="11" text-anchor="middle">'+esc(e.label)+'</text>';
+        }
+      }
+    });
+    // 节点
+    order.forEach(id=>{
+      const p=pos[id]; if(!p) return;
+      const n=nodes[id]||{label:id,type:'box'};
+      if(n.type==='diamond'){
+        const cx=p.cx,cy=p.cy,w=p.w/2+14,h=p.h/2+8;
+        s+='<polygon points="'+cx+','+(cy-h)+' '+(cx+w)+','+cy+' '+cx+','+(cy+h)+' '+(cx-w)+','+cy+'" fill="rgba(34,211,238,.1)" stroke="#22d3ee" stroke-width="1.4"/>';
+      }else{
+        s+='<rect x="'+p.x+'" y="'+p.y+'" width="'+p.w+'" height="'+p.h+'" rx="8" fill="#1b2030" stroke="#6e8bff" stroke-width="1.3"/>';
+      }
+      // 文本换行（约 14 个汉字/行）
+      const maxChars=Math.max(8,Math.floor((p.w-16)/13));
+      const lines=wrapText(n.label,maxChars);
+      lines.forEach((ln,i)=>{
+        const yy=p.cy-(lines.length-1)*8+i*16+4;
+        s+='<text x="'+p.cx+'" y="'+yy+'" fill="#e6e9f0" font-size="12.5" text-anchor="middle">'+esc(ln)+'</text>';
+      });
+    });
+    s+='</svg><div class="sub" style="margin-top:2px">实线：主流程　<span style="color:#fbbf24">黄色虚线：回环（限制使用态改龄解封）</span></div>';
+    return '<div class="flow-wrap">'+s+'</div>';
+  }
+  function wrapText(s,n){
+    const out=[]; let cur='';
+    for(const ch of s){ cur+=ch; let w=0; for(const c of cur) w+=/[\u4e00-\u9fff，。、：；（）]/.test(c)?1:0.6;
+      if(w>=n){out.push(cur);cur='';} }
+    if(cur)out.push(cur); return out.length?out:[s];
   }
 
   function buildSections(D){
@@ -936,7 +1036,7 @@
       h += '</table><h3>三模块字段权限矩阵</h3><table><tr><th>字段</th><th>登录注册</th><th>个人中心（本人）</th><th>管理员用户列表</th></tr>';
       h += c.fieldMatrix.map(r=>'<tr><td><b>'+esc(r.field)+'</b></td><td>'+esc(r.login)+'</td><td>'+esc(r.self)+'</td><td>'+esc(r.admin)+'</td></tr>').join('');
       h += '</table>';
-      h += '<h3>账号状态机</h3><div class="card"><pre class="mermaid" data-src="1">'+esc(c.stateMachine.replace(/```mermaid|```/g,'').trim())+'</pre><div class="sub" style="margin-top:4px">（流程图需要可访问 jsdelivr CDN；加载失败时以上方文本流程为准）</div></div>';
+      h += '<h3>账号状态机</h3><div class="card">'+flowHtml(c.stateMachine)+'</div>';
       h += '<h3>异常与边界</h3><table><tr><th>场景</th><th>处理</th></tr>';
       h += c.exceptions.map(r=>'<tr><td>'+esc(r.scene)+'</td><td>'+esc(r.handle)+'</td></tr>').join('')+'</table>';
       h += '<h3>数据埋点建议</h3><ul>'+c.tracking.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';
@@ -1016,7 +1116,6 @@
       main.innerHTML=sections[t]?sections[t]():sections['common']();
       tree.querySelectorAll('a').forEach(a=>a.classList.toggle('active',a.dataset.t===t));
       main.scrollTop?main.scrollTop=0:window.scrollTo(0,0);
-      if(!opts.skipMermaid) refreshMermaid();
     }
     tree.onclick=e=>{const a=e.target.closest('a');if(a&&a.dataset.t){if(opts.onNavigate)opts.onNavigate(a.dataset.t);else location.hash=a.dataset.t;}};
     main.addEventListener('click',e=>{
