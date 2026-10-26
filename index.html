@@ -4,8 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>银河通用开发者平台 · 后台体系（用户账号体系） · PRD</title>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <style id="pv-style">
   :root{
     --bg:#0b0d12; --panel:#12151d; --panel2:#171b25; --line:#232838;
@@ -876,15 +874,61 @@
   `;
 
   function esc(s){return String(s==null?'':s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
-  function md(mdLib,s){return mdLib ? mdLib.parse(s||'') : '<pre style="white-space:pre-wrap">'+esc(s||'')+'</pre>';}
+  /* 内置极简 Markdown：支持 **加粗**、`代码`、换行、- / 1. 列表；不依赖任何外部库 */
+  function inlineMd(s){
+    return esc(s==null?'':s)
+      .replace(/`([^`]+)`/g,'<code>$1</code>')
+      .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+  }
+  function md(s){
+    if(s==null) return '';
+    const lines=String(s).replace(/\r/g,'').split('\n');
+    let html='', inUl=false, inOl=false;
+    function closeLists(){ if(inUl){html+='</ul>';inUl=false;} if(inOl){html+='</ol>';inOl=false;} }
+    lines.forEach(line=>{
+      const t=line.trim();
+      if(!t){closeLists();return;}
+      let m=t.match(/^[-*]\s+(.+)/);
+      if(m){ if(inOl){html+='</ol>';inOl=false;} if(!inUl){html+='<ul>';inUl=true;} html+='<li>'+inlineMd(m[1])+'</li>'; return; }
+      m=t.match(/^\d+[.、]\s*(.+)/);
+      if(m){ if(inUl){html+='</ul>';inUl=false;} if(!inOl){html+='<ol>';inOl=true;} html+='<li>'+inlineMd(m[1])+'</li>'; return; }
+      closeLists(); html+='<p>'+inlineMd(t)+'</p>';
+    });
+    closeLists();
+    return html;
+  }
   function statusTag(st){const m={'已完成':'done','开发中':'doing','规划中':'plan'};return '<span class="tag '+(m[st]||'plan')+'">'+esc(st)+'</span>';}
 
-  function buildSections(D, marked){
+  /* mermaid 懒加载：先显示等宽文本，加载成功后再尝试渲染；加载失败永不阻塞页面 */
+  let mermaidLoading=null;
+  function loadMermaid(){
+    if(window.mermaid) return Promise.resolve(window.mermaid);
+    if(mermaidLoading) return mermaidLoading;
+    mermaidLoading=new Promise((resolve,reject)=>{
+      const s=document.createElement('script');
+      s.src='https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js';
+      s.async=true; s.onload=()=>resolve(window.mermaid); s.onerror=()=>reject(new Error('mermaid cdn blocked'));
+      document.head.appendChild(s);
+      setTimeout(()=>reject(new Error('mermaid timeout')),6000);
+    }).catch(()=>{ window.__mermaidFailed=true; return null; });
+    return mermaidLoading;
+  }
+  function refreshMermaid(){
+    if(window.__mermaidFailed) return;
+    loadMermaid().then(lib=>{
+      if(!lib) return;
+      try{ lib.initialize({startOnLoad:false,theme:'default',securityLevel:'loose'}); }catch(e){}
+      const nodes=Array.prototype.slice.call(document.querySelectorAll('pre.mermaid[data-src]'));
+      if(nodes.length) lib.run({nodes:nodes}).catch(()=>{});
+    });
+  }
+
+  function buildSections(D){
     const sections = {};
     sections['common'] = () => {
       const c = D.common;
       let h = '<h2>跨界面通用规则</h2><div class="sub">三模块共用的数据底座、状态机、异常处理与一期范围</div>';
-      h += '<div class="card md">'+md(marked,c.overview)+'</div>';
+      h += '<div class="card md">'+md(c.overview)+'</div>';
       h += '<h3>产品目标</h3><ul>'+c.productGoals.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';
       h += '<h3>统一用户数据模型（'+c.dataModel.length+' 个字段）</h3>';
       h += '<table><tr><th>#</th><th>字段</th><th>类型 / 取值</th><th>默认态</th><th>说明</th></tr>';
@@ -892,7 +936,7 @@
       h += '</table><h3>三模块字段权限矩阵</h3><table><tr><th>字段</th><th>登录注册</th><th>个人中心（本人）</th><th>管理员用户列表</th></tr>';
       h += c.fieldMatrix.map(r=>'<tr><td><b>'+esc(r.field)+'</b></td><td>'+esc(r.login)+'</td><td>'+esc(r.self)+'</td><td>'+esc(r.admin)+'</td></tr>').join('');
       h += '</table>';
-      h += '<h3>账号状态机</h3><div class="card"><pre class="mermaid">'+esc(c.stateMachine.replace(/```mermaid|```/g,'').trim())+'</pre></div>';
+      h += '<h3>账号状态机</h3><div class="card"><pre class="mermaid" data-src="1">'+esc(c.stateMachine.replace(/```mermaid|```/g,'').trim())+'</pre><div class="sub" style="margin-top:4px">（流程图需要可访问 jsdelivr CDN；加载失败时以上方文本流程为准）</div></div>';
       h += '<h3>异常与边界</h3><table><tr><th>场景</th><th>处理</th></tr>';
       h += c.exceptions.map(r=>'<tr><td>'+esc(r.scene)+'</td><td>'+esc(r.handle)+'</td></tr>').join('')+'</table>';
       h += '<h3>数据埋点建议</h3><ul>'+c.tracking.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';
@@ -911,14 +955,14 @@
       if(!keys.length) return '';
       let h='<h4>功能模式</h4>';
       keys.forEach(k=>{const m=f.modes[k];
-        h+='<div class="mode-card"><span class="tag mode">'+esc(m.name)+'</span><div class="md">'+md(marked,m.description)+'</div>'+
+        h+='<div class="mode-card"><span class="tag mode">'+esc(m.name)+'</span><div class="md">'+md(m.description)+'</div>'+
           (m.flow?'<div class="flow"><b>流程：</b>'+esc(m.flow)+'</div>':'')+'</div>';
       });
       return h;
     }
     function featureBlock(f){
       let h='<div class="card"><h4 style="color:#fff;font-size:14.5px">'+esc(f.name)+'</h4>';
-      if(f.prd.overview) h+='<div class="md">'+md(marked,f.prd.overview)+'</div>';
+      if(f.prd.overview) h+='<div class="md">'+md(f.prd.overview)+'</div>';
       if(f.prd.requirements&&f.prd.requirements.length) h+='<ul style="margin-top:6px">'+f.prd.requirements.map(r=>'<li>'+esc(r)+'</li>').join('')+'</ul>';
       h+=featureModes(f)+'</div>';
       return h;
@@ -929,10 +973,10 @@
       sections[key]=()=>{
         const p=I.prd;
         let h='<h2>'+esc(I.name)+statusTag(I.status)+'</h2><div class="sub">界面 ID：'+esc(I.id)+'</div>';
-        h+='<h3>功能概述</h3><div class="card md">'+md(marked,p.overview)+'</div>';
+        h+='<h3>功能概述</h3><div class="card md">'+md(p.overview)+'</div>';
         h+='<h3>用户故事</h3><div class="card"><i>'+esc(p.userStory)+'</i></div>';
         h+='<h3>需求列表</h3><ul>'+p.requirements.map(r=>'<li>'+esc(r)+'</li>').join('')+'</ul>';
-        h+='<h3>页面布局</h3><div class="card md">'+md(marked,p.layout)+'</div>';
+        h+='<h3>页面布局</h3><div class="card md">'+md(p.layout)+'</div>';
         h+='<h3>界面原型</h3><div class="card">'+protoBlock(I.prototype)+'</div>';
         h+='<h3>异常处理</h3><ul>'+p.edgeCases.map(r=>'<li>'+esc(r)+'</li>').join('')+'</ul>';
         h+='<h3>功能清单（'+Object.keys(I.features).length+' 个功能）</h3>';
@@ -950,8 +994,6 @@
 
   function mount(D, opts){
     opts = opts || {};
-    const markedLib = window.marked || null;
-    if(window.mermaid){ try{ mermaid.initialize({startOnLoad:false,theme:'default'}); }catch(e){} }
     const root=opts.rootId?document.getElementById(opts.rootId):document;
     const sidebar=root.querySelector('.pv-sidebar, #sidebar');
     const main=root.querySelector('.pv-main, #main');
@@ -959,7 +1001,7 @@
     sidebar.querySelector('.brand .ver').textContent=D.meta.version+' · 更新于 '+D.meta.updatedAt;
     const tip=root.querySelector('.updated'); if(tip) tip.textContent=D.meta.owner+' · '+D.meta.sourceDoc;
 
-    const sections=buildSections(D,markedLib);
+    const sections=buildSections(D);
     const ifaces=[['login',D.login],['center',D.center],['admin',D.admin]];
     let nh='<a data-t="common">📐 通用规则</a>';
     ifaces.forEach(([key,I])=>{
@@ -970,18 +1012,11 @@
     const tree=sidebar.querySelector('#navTree');
     tree.innerHTML=nh;
 
-    let mmSeq=0;
-    function renderMermaid(){
-      if(!window.mermaid) return;
-      const nodes=Array.prototype.slice.call(main.querySelectorAll('.mermaid'))
-        .map(el=>{el.id='pv-mermaid-'+(++mmSeq);return el;});
-      if(nodes.length) mermaid.run({nodes:nodes}).catch(function(){});
-    }
     function show(t){
       main.innerHTML=sections[t]?sections[t]():sections['common']();
       tree.querySelectorAll('a').forEach(a=>a.classList.toggle('active',a.dataset.t===t));
       main.scrollTop?main.scrollTop=0:window.scrollTo(0,0);
-      renderMermaid();
+      if(!opts.skipMermaid) refreshMermaid();
     }
     tree.onclick=e=>{const a=e.target.closest('a');if(a&&a.dataset.t){if(opts.onNavigate)opts.onNavigate(a.dataset.t);else location.hash=a.dataset.t;}};
     main.addEventListener('click',e=>{
