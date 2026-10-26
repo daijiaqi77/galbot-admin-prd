@@ -25,7 +25,10 @@
   #pvStatus.ok{color:var(--green)}
   #pvRoot{flex:1;display:flex;min-height:0}
   #pvRoot #sidebar{width:200px}
-  #pvRoot #main{padding:20px 26px 80px}
+  #pvRoot #main{padding:20px 26px 80px;max-width:none}
+  #pvRoot #protoPanel{position:static;height:auto;width:46%;min-width:340px}
+  #pvRoot #protoPanel .pp-body{min-height:600px}
+  #pvRoot #protoPanel iframe{min-height:600px}
   /* 预览区套用查看器样式 */
   #pv-root-style{}
   /* 发布弹窗 */
@@ -58,7 +61,17 @@
   #sidebar a.active{color:#fff;border-left-color:var(--primary);background:var(--panel2)}
   #sidebar .iface{font-size:12.5px;color:var(--accent);padding:8px 18px 3px;font-weight:600}
   #sidebar .feat{padding-left:32px;font-size:12.5px}
-  #main{flex:1;padding:36px 48px 120px;max-width:980px}
+  #main{flex:1;min-width:0;padding:36px 40px 120px;max-width:960px}
+  #protoPanel{width:46vw;min-width:420px;max-width:760px;flex-shrink:0;height:100vh;position:sticky;top:0;background:var(--panel);border-left:1px solid var(--line);display:none;flex-direction:column}
+  #protoPanel.on{display:flex}
+  #protoPanel .pp-head{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+  #protoPanel .pp-head b{color:var(--text);font-weight:600;font-size:13px}
+  #protoPanel .pp-head .pp-path{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #protoPanel .pp-head a{color:var(--accent);text-decoration:none;white-space:nowrap}
+  #protoPanel iframe{flex:1;width:100%;border:0;background:#fff}
+  #protoPanel .pp-empty{flex:1;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;padding:30px;text-align:center}
+  @media (max-width:1280px){#protoPanel{width:40vw;min-width:360px}#main{padding:30px 28px 100px}}
+  @media (max-width:1024px){#protoPanel{display:none!important}#main{max-width:100%}}
   section{display:none}
   h2{font-size:22px;margin-bottom:6px}
   h3{font-size:16px;margin:28px 0 10px;color:#fff}
@@ -818,100 +831,99 @@
           "overview": "表头「状态」▾ 下拉：全部 / 使用中 / 禁用；选择后按状态过滤并重置第 1 页。",
           "requirements": [
             "状态标签颜色：使用中绿色、禁用红色。"
-          ],
-          "prototype": {},
-          "modes": {}
+          ]
         },
-        "a3": {
-          "id": "a3",
-          "name": "添加用户",
-          "prd": {
-            "overview": "点「+ 添加用户」打开弹窗，顶部只读展示自动生成的模拟 UID；成功后新行追加末位、分页自动跳到末页，新行操作列自带 编辑 / 禁用 / 删除。",
-            "requirements": [
-              "字段（按行）：① 姓名*、出生日期*（日期选择器，不可晚于今天）、手机号* ② 邮箱、所在公司 ③ 所在地区（省 / 直辖市 + 市，两级到市，与个人中心同一套区划）。",
-              "无状态选择、无禁用原因、无角色、无等级；新建账号一律「使用中」。",
-              "姓名、出生日期、手机号三项必填（红星标识）；手机号占位「请输入中国大陆手机号」。",
-              "校验：姓名空 → 「请输入姓名」；超长 / 非法字符 → 「姓名仅支持中文、字母或数字，且不超过 10 个字符」；出生日期空 → 「请选择出生日期」；手机号空 → 「请输入中国大陆手机号」。",
-              "管理员代建账号姓名可空（显 —），该用户首次登录后仍须在个人中心完善姓名与出生日期。"
-            ]
-          },
-          "prototype": {},
-          "modes": {}
-        },
-        "a4": {
-          "id": "a4",
-          "name": "编辑用户",
-          "prd": {
-            "overview": "点操作列「编辑」打开弹窗，UID 与所点行一致并只读；布局同添加弹窗。保存后列表单元格与展开详情同步更新，手机号按全号写回。",
-            "requirements": [
-              "无角色、无等级、无国际区号、无状态选择、无禁用原因（状态唯一入口是操作列）。",
-              "三项必填校验与添加弹窗一致；姓名限 1–10 字符。",
-              "出生日期：管理员可代填 / 修改并直接写回，不受 30 天冷却、不触发年龄提示 / 拦截（年龄约束仍在用户本人侧生效）。",
-              "地区：切省重置市级下拉；历史脏数据以「其他 / 其他」兜底；保存拼接「省 · 市」。"
-            ]
-          },
-          "prototype": {},
-          "modes": {}
-        },
-        "a5": {
-          "id": "a5",
-          "name": "禁用账号（小窗填写原因）",
-          "prd": {
-            "overview": "点操作列「禁用」弹出禁用原因小窗（宽 420px），不再在详情区展开输入。原因必填、≤100 字。",
-            "requirements": [
-              "小窗文案明确：「禁用后该用户将无法登录平台，且所有需要登录后使用的功能均不可使用。」",
-              "原因为空点确认：行内红字「请填写禁用原因」，弹窗不关闭。",
-              "确认后：列表状态变红「禁用」、操作列按钮变绿色「恢复」、详情顶部状态行显禁用标签 + 原因。",
-              "禁用不清除用户资料 / 权益；与用户侧「限制使用」相互独立、可并存。"
-            ]
-          },
-          "prototype": {},
-          "modes": {}
-        },
-        "a6": {
-          "id": "a6",
-          "name": "恢复账号",
-          "prd": {
-            "overview": "点绿色「恢复」后无需填写理由、无二次弹窗，立即恢复：状态回「使用中」、详情禁用原因移除、按钮切回「禁用」；权益延续禁用前状态。",
-            "requirements": [],
-            "prototype": {},
-            "modes": {}
-          },
-          "a7": {
-            "id": "a7",
-            "name": "删除账号",
-            "prd": {
-              "overview": "点操作列「删除」弹出二次确认，确认后用户行与其详情行同时移除，分页收回。属高风险操作。",
-              "requirements": [
-                "确认文案：「确认删除用户『姓名』（用户ID）？此操作不可恢复。」",
-                "操作列按钮点击 stopPropagation，不触发行展开。"
-              ]
-            },
-            "prototype": {},
-            "modes": {}
-          },
-          "a8": {
-            "id": "a8",
-            "name": "展开详情",
-            "prd": {
-              "overview": "点击行体在下方展开 / 收起详情面板。一期仅「基础信息」可编辑落地；L1 开发信息、L2 项目授权详情为原型保留。",
-              "requirements": [
-                "基础信息布局：第一行姓名、出生日期（新用户首次展开显灰色「暂未填写」）；第二行手机号全号、邮箱。",
-                "详情面板内无任何操作按钮。",
-                "L1：研发 / 销售 / 运维三类的订阅档位、开通 / 到期时间、认证等级（待上线）。",
-                "L2：授权项目、开发包、组织、角色、期限、状态；无授权显「暂无 L2 项目授权」（待开发）。"
-              ]
-            },
-            "prototype": {},
-            "modes": {}
-          }
-        }
+        "prototype": {},
+        "modes": {}
       },
-      "changelog": []
+      "a3": {
+        "id": "a3",
+        "name": "添加用户",
+        "prd": {
+          "overview": "点「+ 添加用户」打开弹窗，顶部只读展示自动生成的模拟 UID；成功后新行追加末位、分页自动跳到末页，新行操作列自带 编辑 / 禁用 / 删除。",
+          "requirements": [
+            "字段（按行）：① 姓名*、出生日期*（日期选择器，不可晚于今天）、手机号* ② 邮箱、所在公司 ③ 所在地区（省 / 直辖市 + 市，两级到市，与个人中心同一套区划）。",
+            "无状态选择、无禁用原因、无角色、无等级；新建账号一律「使用中」。",
+            "姓名、出生日期、手机号三项必填（红星标识）；手机号占位「请输入中国大陆手机号」。",
+            "校验：姓名空 → 「请输入姓名」；超长 / 非法字符 → 「姓名仅支持中文、字母或数字，且不超过 10 个字符」；出生日期空 → 「请选择出生日期」；手机号空 → 「请输入中国大陆手机号」。",
+            "管理员代建账号姓名可空（显 —），该用户首次登录后仍须在个人中心完善姓名与出生日期。"
+          ]
+        },
+        "prototype": {},
+        "modes": {}
+      },
+      "a4": {
+        "id": "a4",
+        "name": "编辑用户",
+        "prd": {
+          "overview": "点操作列「编辑」打开弹窗，UID 与所点行一致并只读；布局同添加弹窗。保存后列表单元格与展开详情同步更新，手机号按全号写回。",
+          "requirements": [
+            "无角色、无等级、无国际区号、无状态选择、无禁用原因（状态唯一入口是操作列）。",
+            "三项必填校验与添加弹窗一致；姓名限 1–10 字符。",
+            "出生日期：管理员可代填 / 修改并直接写回，不受 30 天冷却、不触发年龄提示 / 拦截（年龄约束仍在用户本人侧生效）。",
+            "地区：切省重置市级下拉；历史脏数据以「其他 / 其他」兜底；保存拼接「省 · 市」。"
+          ]
+        },
+        "prototype": {},
+        "modes": {}
+      },
+      "a5": {
+        "id": "a5",
+        "name": "禁用账号（小窗填写原因）",
+        "prd": {
+          "overview": "点操作列「禁用」弹出禁用原因小窗（宽 420px），不再在详情区展开输入。原因必填、≤100 字。",
+          "requirements": [
+            "小窗文案明确：「禁用后该用户将无法登录平台，且所有需要登录后使用的功能均不可使用。」",
+            "原因为空点确认：行内红字「请填写禁用原因」，弹窗不关闭。",
+            "确认后：列表状态变红「禁用」、操作列按钮变绿色「恢复」、详情顶部状态行显禁用标签 + 原因。",
+            "禁用不清除用户资料 / 权益；与用户侧「限制使用」相互独立、可并存。"
+          ]
+        },
+        "prototype": {},
+        "modes": {}
+      },
+      "a6": {
+        "id": "a6",
+        "name": "恢复账号",
+        "prd": {
+          "overview": "点绿色「恢复」后无需填写理由、无二次弹窗，立即恢复：状态回「使用中」、详情禁用原因移除、按钮切回「禁用」；权益延续禁用前状态。",
+          "requirements": []
+        },
+        "prototype": {},
+        "modes": {}
+      },
+      "a7": {
+        "id": "a7",
+        "name": "删除账号",
+        "prd": {
+          "overview": "点操作列「删除」弹出二次确认，确认后用户行与其详情行同时移除，分页收回。属高风险操作。",
+          "requirements": [
+            "确认文案：「确认删除用户『姓名』（用户ID）？此操作不可恢复。」",
+            "操作列按钮点击 stopPropagation，不触发行展开。"
+          ]
+        },
+        "prototype": {},
+        "modes": {}
+      },
+      "a8": {
+        "id": "a8",
+        "name": "展开详情",
+        "prd": {
+          "overview": "点击行体在下方展开 / 收起详情面板。一期仅「基础信息」可编辑落地；L1 开发信息、L2 项目授权详情为原型保留。",
+          "requirements": [
+            "基础信息布局：第一行姓名、出生日期（新用户首次展开显灰色「暂未填写」）；第二行手机号全号、邮箱。",
+            "详情面板内无任何操作按钮。",
+            "L1：研发 / 销售 / 运维三类的订阅档位、开通 / 到期时间、认证等级（待上线）。",
+            "L2：授权项目、开发包、组织、角色、期限、状态；无授权显「暂无 L2 项目授权」（待开发）。"
+          ]
+        },
+        "prototype": {},
+        "modes": {}
+      }
     }
   }
 };</script>
-<script>window.__RENDER_SOURCE__ = "/* PRD 查看器单一渲染源（编辑版与查看版共用，禁止在两处分别维护） */\n(function () {\n  const CSS = `\n  :root{\n    --bg:#0b0d12; --panel:#12151d; --panel2:#171b25; --line:#232838;\n    --text:#e6e9f0; --muted:#8b93a7; --primary:#6e8bff; --accent:#22d3ee;\n    --green:#34d399; --amber:#fbbf24; --red:#f87171; --radius:10px;\n  }\n  *{box-sizing:border-box;margin:0;padding:0}\n  body{font-family:-apple-system,\"PingFang SC\",\"Microsoft YaHei\",sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;font-size:14px;line-height:1.7}\n  #sidebar{width:264px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--line);height:100vh;position:sticky;top:0;overflow-y:auto;padding:18px 0}\n  #sidebar .brand{padding:0 18px 14px;border-bottom:1px solid var(--line);margin-bottom:10px}\n  #sidebar .brand h1{font-size:15px;font-weight:700}\n  #sidebar .brand .ver{font-size:12px;color:var(--muted);margin-top:4px}\n  #sidebar a{display:block;padding:7px 18px;color:var(--muted);text-decoration:none;font-size:13px;cursor:pointer;border-left:2px solid transparent}\n  #sidebar a:hover{color:var(--text);background:var(--panel2)}\n  #sidebar a.active{color:#fff;border-left-color:var(--primary);background:var(--panel2)}\n  #sidebar .iface{font-size:12.5px;color:var(--accent);padding:8px 18px 3px;font-weight:600}\n  #sidebar .feat{padding-left:32px;font-size:12.5px}\n  #main{flex:1;padding:36px 48px 120px;max-width:980px}\n  section{display:none}\n  h2{font-size:22px;margin-bottom:6px}\n  h3{font-size:16px;margin:28px 0 10px;color:#fff}\n  h4{font-size:14px;margin:18px 0 8px;color:var(--accent)}\n  .sub{color:var(--muted);font-size:12.5px;margin-bottom:20px}\n  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin:14px 0}\n  .tag{display:inline-block;font-size:11px;padding:2px 9px;border-radius:20px;margin-left:8px;vertical-align:middle}\n  .tag.done{background:rgba(52,211,153,.14);color:var(--green)}\n  .tag.doing{background:rgba(251,191,36,.14);color:var(--amber)}\n  .tag.plan{background:rgba(139,147,167,.16);color:var(--muted)}\n  .tag.mode{background:rgba(110,139,255,.15);color:#a7baff;margin:0 6px 6px 0}\n  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px}\n  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}\n  th{background:var(--panel2);color:#cdd3e4;font-weight:600;white-space:nowrap}\n  ul,ol{padding-left:22px;margin:8px 0}\n  li{margin:4px 0}\n  code{background:var(--panel2);padding:1px 6px;border-radius:5px;font-size:12.5px;color:var(--accent)}\n  .md p{margin:8px 0}\n  .md strong{color:#fff}\n  .proto{display:inline-flex;align-items:center;gap:6px;margin:6px 0;padding:7px 14px;background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.35);color:var(--accent);border-radius:8px;text-decoration:none;font-size:13px;cursor:pointer}\n  .proto:hover{background:rgba(34,211,238,.18)}\n  .mode-card{border-left:3px solid var(--primary);background:var(--panel2);border-radius:0 8px 8px 0;padding:12px 16px;margin:10px 0}\n  .mode-card .flow{margin-top:8px;font-size:12.5px;color:var(--muted)}\n  .mode-card .flow b{color:var(--amber)}\n  .flow{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 0}\n  .flow-node{background:#1b2030;border:1px solid var(--primary);color:#e6e9f0;border-radius:8px;padding:8px 16px;font-size:12.5px;text-align:center;max-width:420px}\n  .flow-node.flow-diamond{background:rgba(110,139,255,.12);border-color:var(--accent);border-radius:14px;font-weight:600}\n  .flow-arrow{display:flex;flex-direction:column;align-items:center;color:var(--muted);font-size:12px;line-height:1.3}\n  .flow-arrow .flow-label{color:var(--amber);font-size:11.5px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:1px 9px;margin-bottom:1px}\n  .flow-arrow .flow-line{color:var(--primary);font-size:13px}\n  .flow-text{white-space:pre-wrap;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px;font-size:12px;color:var(--muted);font-family:ui-monospace,Menlo,monospace}\n  .updated{position:fixed;right:18px;bottom:14px;font-size:11.5px;color:#555c70}\n  `;\n\n  function esc(s){return String(s==null?'':s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}\n  /* 内置极简 Markdown：支持 **加粗**、`代码`、换行、- / 1. 列表；不依赖任何外部库 */\n  function inlineMd(s){\n    return esc(s==null?'':s)\n      .replace(/`([^`]+)`/g,'<code>$1</code>')\n      .replace(/\\*\\*([^*]+)\\*\\*/g,'<strong>$1</strong>');\n  }\n  function md(s){\n    if(s==null) return '';\n    const lines=String(s).replace(/\\r/g,'').split('\\n');\n    let html='', inUl=false, inOl=false;\n    function closeLists(){ if(inUl){html+='</ul>';inUl=false;} if(inOl){html+='</ol>';inOl=false;} }\n    lines.forEach(line=>{\n      const t=line.trim();\n      if(!t){closeLists();return;}\n      let m=t.match(/^[-*]\\s+(.+)/);\n      if(m){ if(inOl){html+='</ol>';inOl=false;} if(!inUl){html+='<ul>';inUl=true;} html+='<li>'+inlineMd(m[1])+'</li>'; return; }\n      m=t.match(/^\\d+[.、]\\s*(.+)/);\n      if(m){ if(inUl){html+='</ul>';inUl=false;} if(!inOl){html+='<ol>';inOl=true;} html+='<li>'+inlineMd(m[1])+'</li>'; return; }\n      closeLists(); html+='<p>'+inlineMd(t)+'</p>';\n    });\n    closeLists();\n    return html;\n  }\n  function statusTag(st){const m={'已完成':'done','开发中':'doing','规划中':'plan'};return '<span class=\"tag '+(m[st]||'plan')+'\">'+esc(st)+'</span>';}\n\n  /* 纯 CSS 流程图：解析简易 flowchart TD 文本（节点 []判定{} + 边标签 |xx|），无外部依赖 */\n  function parseFlow(src){\n    const nodes={}, edges=[];\n    String(src).replace(/```mermaid|```|flowchart\\s+TD/g,'').split('\\n').forEach(line=>{\n      const t=line.trim(); if(!t) return;\n      const m=t.match(/^([A-Za-z0-9_]+)(\\[\\[|\\[|\\{\\{|\\{)?\\s*\"?([^\"\\]]*?)\"?\\s*(?:\\]\\]|\\]|\\}\\}|\\})?\\s*-->\\s*(?:\\|([^|]*)\\|\\s*)?([A-Za-z0-9_]+)(\\[\\[|\\[|\\{\\{|\\{)?\\s*\"?([^\"\\]]*?)\"?\\s*(?:\\]\\]|\\]|\\}\\}|\\})?\\s*$/);\n      if(!m) return;\n      const fid=m[1], fo=m[2], fLabel=m[3], el=m[4], tid=m[5], to=m[6], tLabel=m[7];\n      if(fo&&fLabel!=null) nodes[fid]={label:fLabel.trim(),type:(fo==='{'||fo==='{{')?'diamond':'box'};\n      if(to&&tLabel!=null&&tLabel.trim()) nodes[tid]={label:tLabel.trim(),type:(to==='{'||to==='{{')?'diamond':'box'};\n      edges.push({from:fid,to:tid,label:(el||'').trim()});\n    });\n    return {nodes,edges};\n  }\n  function flowHtml(src){\n    const {nodes,edges}=parseFlow(src);\n    if(!edges.length) return '<pre class=\"flow-text\">'+esc(String(src).replace(/```mermaid|```|flowchart\\s+TD/g,'').trim())+'</pre>';\n\n    // 分层（最长路径），回环边标记为 back\n    const preds={}; edges.forEach(e=>(preds[e.to]=preds[e.to]||[]).push(e));\n    const layer={}, back=new Set(), state={};\n    const order=[]; edges.forEach(e=>{[e.from,e.to].forEach(id=>{if(!order.includes(id))order.push(id);});});\n    function dfs(id){\n      if(state[id]===2) return layer[id];\n      if(state[id]===1){ return null; } // 回环\n      state[id]=1;\n      let lvl=0;\n      (preds[id]||[]).forEach(e=>{\n        const pl=dfs(e.from);\n        if(pl===null){ back.add(e.from+'>'+e.to); return; }\n        lvl=Math.max(lvl,pl+1);\n      });\n      state[id]=2; layer[id]=lvl; return lvl;\n    }\n    order.forEach(id=>dfs(id));\n    const maxLayer=Math.max.apply(null,Object.values(layer));\n    const rows=Array.from({length:maxLayer+1},()=>[]);\n    order.forEach(id=>{ if(layer[id]!=null) rows[layer[id]].push(id); });\n\n    // 节点尺寸（中英文混排估算）\n    const measure=s=>{ let w=0; for(const ch of s){w += /[\\u4e00-\\u9fff，。、：；（）]/.test(ch)?13:7.5;} return {w:Math.max(76,Math.min(240,w+28)),h:36}; };\n    const NW=180, COL=250, ROWH=120, TOP=20;\n    const pos={};\n    rows.forEach((ids,r)=>{\n      ids.forEach((id,c)=>{\n        const n=nodes[id]||{label:id,type:'box'};\n        const sz=measure(n.label);\n        pos[id]={x:c*COL+(COL-sz.w)/2,y:r*ROWH+TOP,w:sz.w,h:sz.h,cx:c*COL+COL/2,cy:r*ROWH+TOP+sz.h/2};\n      });\n    });\n    const cols=Math.max.apply(null,rows.map(r=>r.length));\n    const svgW=Math.max(560,cols*COL+40);\n    const svgH=(maxLayer+1)*ROWH+30;\n\n    let s='<svg class=\"flow-svg\" viewBox=\"0 0 '+svgW+' '+svgH+'\" width=\"100%\" style=\"max-width:'+svgW+'px\" xmlns=\"http://www.w3.org/2000/svg\">';\n    s+='<defs><marker id=\"arr\" markerWidth=\"9\" markerHeight=\"9\" refX=\"8\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L8,3 L0,6 Z\" fill=\"#6e8bff\"/></marker>'+\n       '<marker id=\"arrB\" markerWidth=\"9\" markerHeight=\"9\" refX=\"8\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L8,3 L0,6 Z\" fill=\"#fbbf24\"/></marker></defs>';\n    // 边\n    edges.forEach(e=>{\n      const a=pos[e.from],b=pos[e.to]; if(!a||!b) return;\n      const isBack=back.has(e.from+'>'+e.to);\n      const col=isBack?'#fbbf24':'#6e8bff';\n      if(isBack){\n        const x1=a.x+a.w+4,y1=a.cy,x2=b.x+b.w+4,y2=b.cy;\n        const mx=Math.max(x1,x2)+40;\n        s+='<path d=\"M'+x1+' '+y1+' C'+mx+' '+y1+' '+mx+' '+y2+' '+x2+' '+y2+'\" fill=\"none\" stroke=\"'+col+'\" stroke-width=\"1.5\" stroke-dasharray=\"5 3\" marker-end=\"url(#arrB)\"/>';\n        if(e.label) s+='<text x=\"'+(mx+4)+'\" y=\"'+((y1+y2)/2)+'\" fill=\"#fbbf24\" font-size=\"11\" text-anchor=\"middle\" transform=\"rotate(-90 '+(mx+4)+' '+((y1+y2)/2)+')\">'+esc(e.label)+'</text>';\n      }else{\n        const sameLayer=a.cy===b.cy;\n        if(sameLayer){\n          s+='<path d=\"M'+(a.x+a.w)+' '+a.cy+' L'+b.x+' '+b.cy+'\" fill=\"none\" stroke=\"'+col+'\" stroke-width=\"1.5\" marker-end=\"url(#arr)\"/>';\n        }else{\n          const y1=a.y+a.h,y2=b.y,x1=a.cx,x2=b.cx;\n          const my=(y1+y2)/2;\n          s+='<path d=\"M'+x1+' '+y1+' C'+x1+' '+my+' '+x2+' '+my+' '+x2+' '+y2+'\" fill=\"none\" stroke=\"'+col+'\" stroke-width=\"1.5\" marker-end=\"url(#arr)\"/>';\n        }\n        if(e.label){\n          const ly=a.y+a.h+(b.y-(a.y+a.h))/2;\n          const tw=e.label.length*12+10;\n          s+='<rect x=\"'+(a.cx-tw/2)+'\" y=\"'+(ly-10)+'\" width=\"'+tw+'\" height=\"17\" rx=\"8\" fill=\"#171b25\" stroke=\"#232838\"/>';\n          s+='<text x=\"'+a.cx+'\" y=\"'+ly+3+'\" fill=\"#fbbf24\" font-size=\"11\" text-anchor=\"middle\">'+esc(e.label)+'</text>';\n        }\n      }\n    });\n    // 节点\n    order.forEach(id=>{\n      const p=pos[id]; if(!p) return;\n      const n=nodes[id]||{label:id,type:'box'};\n      if(n.type==='diamond'){\n        const cx=p.cx,cy=p.cy,w=p.w/2+14,h=p.h/2+8;\n        s+='<polygon points=\"'+cx+','+(cy-h)+' '+(cx+w)+','+cy+' '+cx+','+(cy+h)+' '+(cx-w)+','+cy+'\" fill=\"rgba(34,211,238,.1)\" stroke=\"#22d3ee\" stroke-width=\"1.4\"/>';\n      }else{\n        s+='<rect x=\"'+p.x+'\" y=\"'+p.y+'\" width=\"'+p.w+'\" height=\"'+p.h+'\" rx=\"8\" fill=\"#1b2030\" stroke=\"#6e8bff\" stroke-width=\"1.3\"/>';\n      }\n      // 文本换行（约 14 个汉字/行）\n      const maxChars=Math.max(8,Math.floor((p.w-16)/13));\n      const lines=wrapText(n.label,maxChars);\n      lines.forEach((ln,i)=>{\n        const yy=p.cy-(lines.length-1)*8+i*16+4;\n        s+='<text x=\"'+p.cx+'\" y=\"'+yy+'\" fill=\"#e6e9f0\" font-size=\"12.5\" text-anchor=\"middle\">'+esc(ln)+'</text>';\n      });\n    });\n    s+='</svg><div class=\"sub\" style=\"margin-top:2px\">实线：主流程　<span style=\"color:#fbbf24\">黄色虚线：回环（限制使用态改龄解封）</span></div>';\n    return '<div class=\"flow-wrap\">'+s+'</div>';\n  }\n  function wrapText(s,n){\n    const out=[]; let cur='';\n    for(const ch of s){ cur+=ch; let w=0; for(const c of cur) w+=/[\\u4e00-\\u9fff，。、：；（）]/.test(c)?1:0.6;\n      if(w>=n){out.push(cur);cur='';} }\n    if(cur)out.push(cur); return out.length?out:[s];\n  }\n\n  function buildSections(D){\n    const sections = {};\n    sections['common'] = () => {\n      const c = D.common;\n      let h = '<h2>跨界面通用规则</h2><div class=\"sub\">三模块共用的数据底座、状态机、异常处理与一期范围</div>';\n      h += '<div class=\"card md\">'+md(c.overview)+'</div>';\n      h += '<h3>产品目标</h3><ul>'+c.productGoals.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';\n      h += '<h3>统一用户数据模型（'+c.dataModel.length+' 个字段）</h3>';\n      h += '<table><tr><th>#</th><th>字段</th><th>类型 / 取值</th><th>默认态</th><th>说明</th></tr>';\n      h += c.dataModel.map(f=>'<tr><td>'+f.no+'</td><td><b>'+esc(f.field)+'</b></td><td>'+esc(f.type)+'</td><td>'+esc(f.def)+'</td><td>'+esc(f.note)+'</td></tr>').join('');\n      h += '</table><h3>三模块字段权限矩阵</h3><table><tr><th>字段</th><th>登录注册</th><th>个人中心（本人）</th><th>管理员用户列表</th></tr>';\n      h += c.fieldMatrix.map(r=>'<tr><td><b>'+esc(r.field)+'</b></td><td>'+esc(r.login)+'</td><td>'+esc(r.self)+'</td><td>'+esc(r.admin)+'</td></tr>').join('');\n      h += '</table>';\n      h += '<h3>账号状态机</h3><div class=\"card\">'+flowHtml(c.stateMachine)+'</div>';\n      h += '<h3>异常与边界</h3><table><tr><th>场景</th><th>处理</th></tr>';\n      h += c.exceptions.map(r=>'<tr><td>'+esc(r.scene)+'</td><td>'+esc(r.handle)+'</td></tr>').join('')+'</table>';\n      h += '<h3>数据埋点建议</h3><ul>'+c.tracking.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';\n      h += '<h3>第一版范围</h3><div class=\"card\"><h4 style=\"color:var(--green)\">做</h4><ul>'+c.scope.do.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul><h4 style=\"color:var(--red);margin-top:14px\">不做</h4><ul>'+c.scope.dont.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>';\n      h += '<h3>待评审确认项</h3><ol>'+c.openQuestions.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>';\n      return h;\n    };\n\n    function protoBlock(p){\n      if(!p||!p.url) return '<div class=\"sub\">（无独立原型）</div>';\n      return '<a class=\"proto\" target=\"_blank\" href=\"'+p.url+'\">🔗 查看界面原型（高保真）&nbsp;<span style=\"color:#5b6378\">'+esc(p.anchor||'')+'</span></a>'+\n        (p.note?'<div class=\"sub\" style=\"margin:4px 0 0\">'+esc(p.note)+'</div>':'');\n    }\n    function featureModes(f){\n      const keys=Object.keys(f.modes||{});\n      if(!keys.length) return '';\n      let h='<h4>功能模式</h4>';\n      keys.forEach(k=>{const m=f.modes[k];\n        h+='<div class=\"mode-card\"><span class=\"tag mode\">'+esc(m.name)+'</span><div class=\"md\">'+md(m.description)+'</div>'+\n          (m.flow?'<div class=\"flow\"><b>流程：</b>'+esc(m.flow)+'</div>':'')+'</div>';\n      });\n      return h;\n    }\n    function featureBlock(f){\n      let h='<div class=\"card\"><h4 style=\"color:#fff;font-size:14.5px\">'+esc(f.name)+'</h4>';\n      if(f.prd.overview) h+='<div class=\"md\">'+md(f.prd.overview)+'</div>';\n      if(f.prd.requirements&&f.prd.requirements.length) h+='<ul style=\"margin-top:6px\">'+f.prd.requirements.map(r=>'<li>'+esc(r)+'</li>').join('')+'</ul>';\n      h+=featureModes(f)+'</div>';\n      return h;\n    }\n\n    const ifaces=[['login',D.login],['center',D.center],['admin',D.admin]];\n    ifaces.forEach(([key,I])=>{\n      sections[key]=()=>{\n        const p=I.prd;\n        let h='<h2>'+esc(I.name)+statusTag(I.status)+'</h2><div class=\"sub\">界面 ID：'+esc(I.id)+'</div>';\n        h+='<h3>功能概述</h3><div class=\"card md\">'+md(p.overview)+'</div>';\n        h+='<h3>用户故事</h3><div class=\"card\"><i>'+esc(p.userStory)+'</i></div>';\n        h+='<h3>需求列表</h3><ul>'+p.requirements.map(r=>'<li>'+esc(r)+'</li>').join('')+'</ul>';\n        h+='<h3>页面布局</h3><div class=\"card md\">'+md(p.layout)+'</div>';\n        h+='<h3>界面原型</h3><div class=\"card\">'+protoBlock(I.prototype)+'</div>';\n        h+='<h3>异常处理</h3><ul>'+p.edgeCases.map(r=>'<li>'+esc(r)+'</li>').join('')+'</ul>';\n        h+='<h3>功能清单（'+Object.keys(I.features).length+' 个功能）</h3>';\n        Object.keys(I.features).forEach(fk=>{h+=featureBlock(I.features[fk]);});\n        return h;\n      };\n      Object.keys(I.features).forEach(fk=>{\n        const f=I.features[fk];\n        sections[key+'-'+fk]=()=>'<h2>'+esc(I.name)+' / '+esc(f.name)+'</h2><div class=\"sub\">'+esc(I.id)+' → '+esc(f.id)+'</div>'+\n          featureBlock(f)+'<a class=\"proto\" style=\"margin-top:14px\" data-back=\"'+key+'\">← 返回 '+esc(I.name)+'</a>';\n      });\n    });\n    return sections;\n  }\n\n  function mount(D, opts){\n    opts = opts || {};\n    const root=opts.rootId?document.getElementById(opts.rootId):document;\n    const sidebar=root.querySelector('.pv-sidebar, #sidebar');\n    const main=root.querySelector('.pv-main, #main');\n    sidebar.querySelector('.brand h1').textContent=D.meta.name;\n    sidebar.querySelector('.brand .ver').textContent=D.meta.version+' · 更新于 '+D.meta.updatedAt;\n    const tip=root.querySelector('.updated'); if(tip) tip.textContent=D.meta.owner+' · '+D.meta.sourceDoc;\n\n    const sections=buildSections(D);\n    const ifaces=[['login',D.login],['center',D.center],['admin',D.admin]];\n    let nh='<a data-t=\"common\">📐 通用规则</a>';\n    ifaces.forEach(([key,I])=>{\n      nh+='<div class=\"iface\">'+esc(I.name)+'</div>';\n      nh+='<a class=\"feat\" data-t=\"'+key+'\">界面总览</a>';\n      Object.keys(I.features).forEach(fk=>{nh+='<a class=\"feat\" data-t=\"'+key+'-'+fk+'\">'+esc(I.features[fk].name)+'</a>';});\n    });\n    const tree=sidebar.querySelector('#navTree');\n    tree.innerHTML=nh;\n\n    function show(t){\n      main.innerHTML=sections[t]?sections[t]():sections['common']();\n      tree.querySelectorAll('a').forEach(a=>a.classList.toggle('active',a.dataset.t===t));\n      main.scrollTop?main.scrollTop=0:window.scrollTo(0,0);\n    }\n    tree.onclick=e=>{const a=e.target.closest('a');if(a&&a.dataset.t){if(opts.onNavigate)opts.onNavigate(a.dataset.t);else location.hash=a.dataset.t;}};\n    main.addEventListener('click',e=>{\n      const b=e.target.closest('[data-back]');if(b){if(opts.onNavigate)opts.onNavigate(b.dataset.back);else location.hash=b.dataset.back;}\n    });\n    if(opts.onNavigate){opts.onNavigate('common');}\n    else{\n      function route(){show(location.hash.slice(1)||'common');}\n      window.addEventListener('hashchange',route);route();\n    }\n    return {show};\n  }\n\n  window.PRD_VIEWER={css:CSS,mount:mount,buildSections:buildSections};\n})();\n";</script>
+<script>window.__RENDER_SOURCE__ = "/* PRD 查看器单一渲染源（编辑版与查看版共用，禁止在两处分别维护） */\n(function () {\n  const CSS = `\n  :root{\n    --bg:#0b0d12; --panel:#12151d; --panel2:#171b25; --line:#232838;\n    --text:#e6e9f0; --muted:#8b93a7; --primary:#6e8bff; --accent:#22d3ee;\n    --green:#34d399; --amber:#fbbf24; --red:#f87171; --radius:10px;\n  }\n  *{box-sizing:border-box;margin:0;padding:0}\n  body{font-family:-apple-system,\"PingFang SC\",\"Microsoft YaHei\",sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;font-size:14px;line-height:1.7}\n  #sidebar{width:264px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--line);height:100vh;position:sticky;top:0;overflow-y:auto;padding:18px 0}\n  #sidebar .brand{padding:0 18px 14px;border-bottom:1px solid var(--line);margin-bottom:10px}\n  #sidebar .brand h1{font-size:15px;font-weight:700}\n  #sidebar .brand .ver{font-size:12px;color:var(--muted);margin-top:4px}\n  #sidebar a{display:block;padding:7px 18px;color:var(--muted);text-decoration:none;font-size:13px;cursor:pointer;border-left:2px solid transparent}\n  #sidebar a:hover{color:var(--text);background:var(--panel2)}\n  #sidebar a.active{color:#fff;border-left-color:var(--primary);background:var(--panel2)}\n  #sidebar .iface{font-size:12.5px;color:var(--accent);padding:8px 18px 3px;font-weight:600}\n  #sidebar .feat{padding-left:32px;font-size:12.5px}\n  #main{flex:1;min-width:0;padding:36px 40px 120px;max-width:960px}\n  #protoPanel{width:46vw;min-width:420px;max-width:760px;flex-shrink:0;height:100vh;position:sticky;top:0;background:var(--panel);border-left:1px solid var(--line);display:none;flex-direction:column}\n  #protoPanel.on{display:flex}\n  #protoPanel .pp-head{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--muted)}\n  #protoPanel .pp-head b{color:var(--text);font-weight:600;font-size:13px}\n  #protoPanel .pp-head .pp-path{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}\n  #protoPanel .pp-head a{color:var(--accent);text-decoration:none;white-space:nowrap}\n  #protoPanel iframe{flex:1;width:100%;border:0;background:#fff}\n  #protoPanel .pp-empty{flex:1;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;padding:30px;text-align:center}\n  @media (max-width:1280px){#protoPanel{width:40vw;min-width:360px}#main{padding:30px 28px 100px}}\n  @media (max-width:1024px){#protoPanel{display:none!important}#main{max-width:100%}}\n  section{display:none}\n  h2{font-size:22px;margin-bottom:6px}\n  h3{font-size:16px;margin:28px 0 10px;color:#fff}\n  h4{font-size:14px;margin:18px 0 8px;color:var(--accent)}\n  .sub{color:var(--muted);font-size:12.5px;margin-bottom:20px}\n  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin:14px 0}\n  .tag{display:inline-block;font-size:11px;padding:2px 9px;border-radius:20px;margin-left:8px;vertical-align:middle}\n  .tag.done{background:rgba(52,211,153,.14);color:var(--green)}\n  .tag.doing{background:rgba(251,191,36,.14);color:var(--amber)}\n  .tag.plan{background:rgba(139,147,167,.16);color:var(--muted)}\n  .tag.mode{background:rgba(110,139,255,.15);color:#a7baff;margin:0 6px 6px 0}\n  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px}\n  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}\n  th{background:var(--panel2);color:#cdd3e4;font-weight:600;white-space:nowrap}\n  ul,ol{padding-left:22px;margin:8px 0}\n  li{margin:4px 0}\n  code{background:var(--panel2);padding:1px 6px;border-radius:5px;font-size:12.5px;color:var(--accent)}\n  .md p{margin:8px 0}\n  .md strong{color:#fff}\n  .proto{display:inline-flex;align-items:center;gap:6px;margin:6px 0;padding:7px 14px;background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.35);color:var(--accent);border-radius:8px;text-decoration:none;font-size:13px;cursor:pointer}\n  .proto:hover{background:rgba(34,211,238,.18)}\n  .mode-card{border-left:3px solid var(--primary);background:var(--panel2);border-radius:0 8px 8px 0;padding:12px 16px;margin:10px 0}\n  .mode-card .flow{margin-top:8px;font-size:12.5px;color:var(--muted)}\n  .mode-card .flow b{color:var(--amber)}\n  .flow{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 0}\n  .flow-node{background:#1b2030;border:1px solid var(--primary);color:#e6e9f0;border-radius:8px;padding:8px 16px;font-size:12.5px;text-align:center;max-width:420px}\n  .flow-node.flow-diamond{background:rgba(110,139,255,.12);border-color:var(--accent);border-radius:14px;font-weight:600}\n  .flow-arrow{display:flex;flex-direction:column;align-items:center;color:var(--muted);font-size:12px;line-height:1.3}\n  .flow-arrow .flow-label{color:var(--amber);font-size:11.5px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:1px 9px;margin-bottom:1px}\n  .flow-arrow .flow-line{color:var(--primary);font-size:13px}\n  .flow-text{white-space:pre-wrap;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px;font-size:12px;color:var(--muted);font-family:ui-monospace,Menlo,monospace}\n  .updated{position:fixed;right:18px;bottom:14px;font-size:11.5px;color:#555c70}\n  `;\n\n  function esc(s){return String(s==null?'':s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}\n  /* 内置极简 Markdown：支持 **加粗**、`代码`、换行、- / 1. 列表；不依赖任何外部库 */\n  function inlineMd(s){\n    return esc(s==null?'':s)\n      .replace(/`([^`]+)`/g,'<code>$1</code>')\n      .replace(/\\*\\*([^*]+)\\*\\*/g,'<strong>$1</strong>');\n  }\n  function md(s){\n    if(s==null) return '';\n    const lines=String(s).replace(/\\r/g,'').split('\\n');\n    let html='', inUl=false, inOl=false;\n    function closeLists(){ if(inUl){html+='</ul>';inUl=false;} if(inOl){html+='</ol>';inOl=false;} }\n    lines.forEach(line=>{\n      const t=line.trim();\n      if(!t){closeLists();return;}\n      let m=t.match(/^[-*]\\s+(.+)/);\n      if(m){ if(inOl){html+='</ol>';inOl=false;} if(!inUl){html+='<ul>';inUl=true;} html+='<li>'+inlineMd(m[1])+'</li>'; return; }\n      m=t.match(/^\\d+[.、]\\s*(.+)/);\n      if(m){ if(inUl){html+='</ul>';inUl=false;} if(!inOl){html+='<ol>';inOl=true;} html+='<li>'+inlineMd(m[1])+'</li>'; return; }\n      closeLists(); html+='<p>'+inlineMd(t)+'</p>';\n    });\n    closeLists();\n    return html;\n  }\n  function statusTag(st){const m={'已完成':'done','开发中':'doing','规划中':'plan'};return '<span class=\"tag '+(m[st]||'plan')+'\">'+esc(st)+'</span>';}\n\n  /* 纯 CSS 流程图：解析简易 flowchart TD 文本（节点 []判定{} + 边标签 |xx|），无外部依赖 */\n  function parseFlow(src){\n    const nodes={}, edges=[];\n    String(src).replace(/```mermaid|```|flowchart\\s+TD/g,'').split('\\n').forEach(line=>{\n      const t=line.trim(); if(!t) return;\n      const m=t.match(/^([A-Za-z0-9_]+)(\\[\\[|\\[|\\{\\{|\\{)?\\s*\"?([^\"\\]]*?)\"?\\s*(?:\\]\\]|\\]|\\}\\}|\\})?\\s*-->\\s*(?:\\|([^|]*)\\|\\s*)?([A-Za-z0-9_]+)(\\[\\[|\\[|\\{\\{|\\{)?\\s*\"?([^\"\\]]*?)\"?\\s*(?:\\]\\]|\\]|\\}\\}|\\})?\\s*$/);\n      if(!m) return;\n      const fid=m[1], fo=m[2], fLabel=m[3], el=m[4], tid=m[5], to=m[6], tLabel=m[7];\n      if(fo&&fLabel!=null) nodes[fid]={label:fLabel.trim(),type:(fo==='{'||fo==='{{')?'diamond':'box'};\n      if(to&&tLabel!=null&&tLabel.trim()) nodes[tid]={label:tLabel.trim(),type:(to==='{'||to==='{{')?'diamond':'box'};\n      edges.push({from:fid,to:tid,label:(el||'').trim()});\n    });\n    return {nodes,edges};\n  }\n  function flowHtml(src){\n    const {nodes,edges}=parseFlow(src);\n    if(!edges.length) return '<pre class=\"flow-text\">'+esc(String(src).replace(/```mermaid|```|flowchart\\s+TD/g,'').trim())+'</pre>';\n\n    // 分层（最长路径），回环边标记为 back\n    const preds={}; edges.forEach(e=>(preds[e.to]=preds[e.to]||[]).push(e));\n    const layer={}, back=new Set(), state={};\n    const order=[]; edges.forEach(e=>{[e.from,e.to].forEach(id=>{if(!order.includes(id))order.push(id);});});\n    function dfs(id){\n      if(state[id]===2) return layer[id];\n      if(state[id]===1){ return null; } // 回环\n      state[id]=1;\n      let lvl=0;\n      (preds[id]||[]).forEach(e=>{\n        const pl=dfs(e.from);\n        if(pl===null){ back.add(e.from+'>'+e.to); return; }\n        lvl=Math.max(lvl,pl+1);\n      });\n      state[id]=2; layer[id]=lvl; return lvl;\n    }\n    order.forEach(id=>dfs(id));\n    const maxLayer=Math.max.apply(null,Object.values(layer));\n    const rows=Array.from({length:maxLayer+1},()=>[]);\n    order.forEach(id=>{ if(layer[id]!=null) rows[layer[id]].push(id); });\n\n    // 节点尺寸（中英文混排估算）\n    const measure=s=>{ let w=0; for(const ch of s){w += /[\\u4e00-\\u9fff，。、：；（）]/.test(ch)?13:7.5;} return {w:Math.max(76,Math.min(240,w+28)),h:36}; };\n    const NW=180, COL=250, ROWH=120, TOP=20;\n    const pos={};\n    rows.forEach((ids,r)=>{\n      ids.forEach((id,c)=>{\n        const n=nodes[id]||{label:id,type:'box'};\n        const sz=measure(n.label);\n        pos[id]={x:c*COL+(COL-sz.w)/2,y:r*ROWH+TOP,w:sz.w,h:sz.h,cx:c*COL+COL/2,cy:r*ROWH+TOP+sz.h/2};\n      });\n    });\n    const cols=Math.max.apply(null,rows.map(r=>r.length));\n    const svgW=Math.max(560,cols*COL+40);\n    const svgH=(maxLayer+1)*ROWH+30;\n\n    let s='<svg class=\"flow-svg\" viewBox=\"0 0 '+svgW+' '+svgH+'\" width=\"100%\" style=\"max-width:'+svgW+'px\" xmlns=\"http://www.w3.org/2000/svg\">';\n    s+='<defs><marker id=\"arr\" markerWidth=\"9\" markerHeight=\"9\" refX=\"8\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L8,3 L0,6 Z\" fill=\"#6e8bff\"/></marker>'+\n       '<marker id=\"arrB\" markerWidth=\"9\" markerHeight=\"9\" refX=\"8\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L8,3 L0,6 Z\" fill=\"#fbbf24\"/></marker></defs>';\n    // 边\n    edges.forEach(e=>{\n      const a=pos[e.from],b=pos[e.to]; if(!a||!b) return;\n      const isBack=back.has(e.from+'>'+e.to);\n      const col=isBack?'#fbbf24':'#6e8bff';\n      if(isBack){\n        const x1=a.x+a.w+4,y1=a.cy,x2=b.x+b.w+4,y2=b.cy;\n        const mx=Math.max(x1,x2)+40;\n        s+='<path d=\"M'+x1+' '+y1+' C'+mx+' '+y1+' '+mx+' '+y2+' '+x2+' '+y2+'\" fill=\"none\" stroke=\"'+col+'\" stroke-width=\"1.5\" stroke-dasharray=\"5 3\" marker-end=\"url(#arrB)\"/>';\n        if(e.label) s+='<text x=\"'+(mx+4)+'\" y=\"'+((y1+y2)/2)+'\" fill=\"#fbbf24\" font-size=\"11\" text-anchor=\"middle\" transform=\"rotate(-90 '+(mx+4)+' '+((y1+y2)/2)+')\">'+esc(e.label)+'</text>';\n      }else{\n        const sameLayer=a.cy===b.cy;\n        if(sameLayer){\n          s+='<path d=\"M'+(a.x+a.w)+' '+a.cy+' L'+b.x+' '+b.cy+'\" fill=\"none\" stroke=\"'+col+'\" stroke-width=\"1.5\" marker-end=\"url(#arr)\"/>';\n        }else{\n          const y1=a.y+a.h,y2=b.y,x1=a.cx,x2=b.cx;\n          const my=(y1+y2)/2;\n          s+='<path d=\"M'+x1+' '+y1+' C'+x1+' '+my+' '+x2+' '+my+' '+x2+' '+y2+'\" fill=\"none\" stroke=\"'+col+'\" stroke-width=\"1.5\" marker-end=\"url(#arr)\"/>';\n        }\n        if(e.label){\n          const ly=a.y+a.h+(b.y-(a.y+a.h))/2;\n          const tw=e.label.length*12+10;\n          s+='<rect x=\"'+(a.cx-tw/2)+'\" y=\"'+(ly-10)+'\" width=\"'+tw+'\" height=\"17\" rx=\"8\" fill=\"#171b25\" stroke=\"#232838\"/>';\n          s+='<text x=\"'+a.cx+'\" y=\"'+ly+3+'\" fill=\"#fbbf24\" font-size=\"11\" text-anchor=\"middle\">'+esc(e.label)+'</text>';\n        }\n      }\n    });\n    // 节点\n    order.forEach(id=>{\n      const p=pos[id]; if(!p) return;\n      const n=nodes[id]||{label:id,type:'box'};\n      if(n.type==='diamond'){\n        const cx=p.cx,cy=p.cy,w=p.w/2+14,h=p.h/2+8;\n        s+='<polygon points=\"'+cx+','+(cy-h)+' '+(cx+w)+','+cy+' '+cx+','+(cy+h)+' '+(cx-w)+','+cy+'\" fill=\"rgba(34,211,238,.1)\" stroke=\"#22d3ee\" stroke-width=\"1.4\"/>';\n      }else{\n        s+='<rect x=\"'+p.x+'\" y=\"'+p.y+'\" width=\"'+p.w+'\" height=\"'+p.h+'\" rx=\"8\" fill=\"#1b2030\" stroke=\"#6e8bff\" stroke-width=\"1.3\"/>';\n      }\n      // 文本换行（约 14 个汉字/行）\n      const maxChars=Math.max(8,Math.floor((p.w-16)/13));\n      const lines=wrapText(n.label,maxChars);\n      lines.forEach((ln,i)=>{\n        const yy=p.cy-(lines.length-1)*8+i*16+4;\n        s+='<text x=\"'+p.cx+'\" y=\"'+yy+'\" fill=\"#e6e9f0\" font-size=\"12.5\" text-anchor=\"middle\">'+esc(ln)+'</text>';\n      });\n    });\n    s+='</svg><div class=\"sub\" style=\"margin-top:2px\">实线：主流程　<span style=\"color:#fbbf24\">黄色虚线：回环（限制使用态改龄解封）</span></div>';\n    return '<div class=\"flow-wrap\">'+s+'</div>';\n  }\n  function wrapText(s,n){\n    const out=[]; let cur='';\n    for(const ch of s){ cur+=ch; let w=0; for(const c of cur) w+=/[\\u4e00-\\u9fff，。、：；（）]/.test(c)?1:0.6;\n      if(w>=n){out.push(cur);cur='';} }\n    if(cur)out.push(cur); return out.length?out:[s];\n  }\n\n  function buildSections(D){\n    const sections = {};\n    sections['common'] = () => {\n      const c = D.common;\n      let h = '<h2>跨界面通用规则</h2><div class=\"sub\">三模块共用的数据底座、状态机、异常处理与一期范围</div>';\n      h += '<div class=\"card md\">'+md(c.overview)+'</div>';\n      h += '<h3>产品目标</h3><ul>'+c.productGoals.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';\n      h += '<h3>统一用户数据模型（'+c.dataModel.length+' 个字段）</h3>';\n      h += '<table><tr><th>#</th><th>字段</th><th>类型 / 取值</th><th>默认态</th><th>说明</th></tr>';\n      h += c.dataModel.map(f=>'<tr><td>'+f.no+'</td><td><b>'+esc(f.field)+'</b></td><td>'+esc(f.type)+'</td><td>'+esc(f.def)+'</td><td>'+esc(f.note)+'</td></tr>').join('');\n      h += '</table><h3>三模块字段权限矩阵</h3><table><tr><th>字段</th><th>登录注册</th><th>个人中心（本人）</th><th>管理员用户列表</th></tr>';\n      h += c.fieldMatrix.map(r=>'<tr><td><b>'+esc(r.field)+'</b></td><td>'+esc(r.login)+'</td><td>'+esc(r.self)+'</td><td>'+esc(r.admin)+'</td></tr>').join('');\n      h += '</table>';\n      h += '<h3>账号状态机</h3><div class=\"card\">'+flowHtml(c.stateMachine)+'</div>';\n      h += '<h3>异常与边界</h3><table><tr><th>场景</th><th>处理</th></tr>';\n      h += c.exceptions.map(r=>'<tr><td>'+esc(r.scene)+'</td><td>'+esc(r.handle)+'</td></tr>').join('')+'</table>';\n      h += '<h3>数据埋点建议</h3><ul>'+c.tracking.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';\n      h += '<h3>第一版范围</h3><div class=\"card\"><h4 style=\"color:var(--green)\">做</h4><ul>'+c.scope.do.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul><h4 style=\"color:var(--red);margin-top:14px\">不做</h4><ul>'+c.scope.dont.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>';\n      h += '<h3>待评审确认项</h3><ol>'+c.openQuestions.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>';\n      return h;\n    };\n\n    function protoBlock(p){\n      if(!p||!p.url) return '<div class=\"sub\">（无独立原型）</div>';\n      return '<a class=\"proto\" target=\"_blank\" href=\"'+p.url+'\">↗ 新窗口打开高保真原型&nbsp;<span style=\"color:#5b6378\">'+esc(p.anchor||'')+'</span></a>'+\n        (p.note?'<div class=\"sub\" style=\"margin:4px 0 0\">'+esc(p.note)+'（右侧可直接操作预览）</div>':'');\n    }\n    function featureModes(f){\n      const keys=Object.keys(f.modes||{});\n      if(!keys.length) return '';\n      let h='<h4>功能模式</h4>';\n      keys.forEach(k=>{const m=f.modes[k];\n        h+='<div class=\"mode-card\"><span class=\"tag mode\">'+esc(m.name)+'</span><div class=\"md\">'+md(m.description)+'</div>'+\n          (m.flow?'<div class=\"flow\"><b>流程：</b>'+esc(m.flow)+'</div>':'')+'</div>';\n      });\n      return h;\n    }\n    function featureBlock(f){\n      let h='<div class=\"card\"><h4 style=\"color:#fff;font-size:14.5px\">'+esc(f.name)+'</h4>';\n      if(f.prd.overview) h+='<div class=\"md\">'+md(f.prd.overview)+'</div>';\n      if(f.prd.requirements&&f.prd.requirements.length) h+='<ul style=\"margin-top:6px\">'+f.prd.requirements.map(r=>'<li>'+esc(r)+'</li>').join('')+'</ul>';\n      h+=featureModes(f)+'</div>';\n      return h;\n    }\n\n    const ifaces=[['login',D.login],['center',D.center],['admin',D.admin]];\n    ifaces.forEach(([key,I])=>{\n      sections[key]=()=>{\n        const p=I.prd;\n        let h='<h2>'+esc(I.name)+statusTag(I.status)+'</h2><div class=\"sub\">界面 ID：'+esc(I.id)+'</div>';\n        h+='<h3>功能概述</h3><div class=\"card md\">'+md(p.overview)+'</div>';\n        h+='<h3>用户故事</h3><div class=\"card\"><i>'+esc(p.userStory)+'</i></div>';\n        h+='<h3>需求列表</h3><ul>'+p.requirements.map(r=>'<li>'+esc(r)+'</li>').join('')+'</ul>';\n        h+='<h3>页面布局</h3><div class=\"card md\">'+md(p.layout)+'</div>';\n        h+='<h3>界面原型</h3><div class=\"card\">'+protoBlock(I.prototype)+'</div>';\n        h+='<h3>异常处理</h3><ul>'+p.edgeCases.map(r=>'<li>'+esc(r)+'</li>').join('')+'</ul>';\n        h+='<h3>功能清单（'+Object.keys(I.features).length+' 个功能）</h3>';\n        Object.keys(I.features).forEach(fk=>{h+=featureBlock(I.features[fk]);});\n        return h;\n      };\n      Object.keys(I.features).forEach(fk=>{\n        const f=I.features[fk];\n        sections[key+'-'+fk]=()=>'<h2>'+esc(I.name)+' / '+esc(f.name)+'</h2><div class=\"sub\">'+esc(I.id)+' → '+esc(f.id)+'</div>'+\n          featureBlock(f)+'<a class=\"proto\" style=\"margin-top:14px\" data-back=\"'+key+'\">← 返回 '+esc(I.name)+'</a>';\n      });\n    });\n    return sections;\n  }\n\n  function mount(D, opts){\n    opts = opts || {};\n    const root=opts.root||(opts.rootId?document.getElementById(opts.rootId):document);\n    const sidebar=root.querySelector('.pv-sidebar, #sidebar');\n    const main=root.querySelector('.pv-main, #main');\n    sidebar.querySelector('.brand h1').textContent=D.meta.name;\n    sidebar.querySelector('.brand .ver').textContent=D.meta.version+' · 更新于 '+D.meta.updatedAt;\n    const tip=root.querySelector('.updated'); if(tip) tip.textContent=D.meta.owner+' · '+D.meta.sourceDoc;\n\n    const sections=buildSections(D);\n    const ifaces=[['login',D.login],['center',D.center],['admin',D.admin]];\n    let nh='<a data-t=\"common\">📐 通用规则</a>';\n    ifaces.forEach(([key,I])=>{\n      nh+='<div class=\"iface\">'+esc(I.name)+'</div>';\n      nh+='<a class=\"feat\" data-t=\"'+key+'\">界面总览</a>';\n      Object.keys(I.features).forEach(fk=>{nh+='<a class=\"feat\" data-t=\"'+key+'-'+fk+'\">'+esc(I.features[fk].name)+'</a>';});\n    });\n    const tree=sidebar.querySelector('#navTree');\n    tree.innerHTML=nh;\n\n    /* 右侧原型面板：由当前导航自动推导模块/页面，嵌入同仓托管的可交互原型 */\n    const base=(opts&&opts.protoBase)||'assets/prototype.html';\n    let panel=root.querySelector('#protoPanel');\n    if(!panel){\n      panel=document.createElement('aside');\n      panel.id='protoPanel';\n      panel.innerHTML='<div class=\"pp-head\"><b>🖥 界面原型</b><span class=\"pp-path\"></span><a target=\"_blank\" class=\"pp-open\">新窗口 ↗</a></div><div class=\"pp-body\" style=\"flex:1;display:flex;flex-direction:column;min-height:0\"></div>';\n      (root.nodeType===9?document.body:root).appendChild(panel);\n    }\n    const ppBody=panel.querySelector('.pp-body'), ppPath=panel.querySelector('.pp-path'), ppOpen=panel.querySelector('.pp-open');\n    function protoTarget(t){\n      if(t==='common') return null;\n      const map={login:{mod:'login',page:'',name:D.login.name},center:{mod:'user',page:'',name:D.center.name},admin:{mod:'admin',page:'users',name:D.admin.name}};\n      let info=null;\n      if(map[t]){ info=map[t]; }\n      else{\n        const m=String(t).match(/^(login|center|admin)-(.*)$/);\n        if(m){ info=Object.assign({},map[m[1]]); info.feat=D[m[1]].features[m[2]]; }\n      }\n      if(!info) return null;\n      return info;\n    }\n    let lastSrc='';\n    function syncProto(t){\n      const info=protoTarget(t);\n      if(!info){ panel.classList.remove('on'); return; }\n      panel.classList.add('on');\n      const src=base+'?pv='+info.mod+(info.page?':'+info.page:'')+'&t='+encodeURIComponent(t)+'&v=1';\n      const pathTxt=info.feat?info.name+' → '+info.feat.name:info.name+' · 界面总览';\n      if(ppPath.textContent!==pathTxt) ppPath.textContent=pathTxt;\n      ppOpen.href=src;\n      if(src!==lastSrc){\n        lastSrc=src;\n        ppBody.innerHTML='<iframe title=\"界面原型\" src=\"'+src+'\"></iframe>';\n      }\n    }\n\n    function show(t){\n      t=sections[t]?t:'common';\n      main.innerHTML=sections[t]();\n      tree.querySelectorAll('a').forEach(a=>a.classList.toggle('active',a.dataset.t===t));\n      syncProto(t);\n      main.scrollTop?main.scrollTop=0:window.scrollTo(0,0);\n    }\n    tree.onclick=e=>{const a=e.target.closest('a');if(a&&a.dataset.t){if(opts.onNavigate)opts.onNavigate(a.dataset.t);else location.hash=a.dataset.t;}};\n    main.addEventListener('click',e=>{\n      const b=e.target.closest('[data-back]');if(b){if(opts.onNavigate)opts.onNavigate(b.dataset.back);else location.hash=b.dataset.back;}\n    });\n    if(opts.onNavigate){opts.onNavigate('common');}\n    else{\n      function route(){show(location.hash.slice(1)||'common');}\n      window.addEventListener('hashchange',route);route();\n    }\n    return {show};\n  }\n\n  window.PRD_VIEWER={css:CSS,mount:mount,buildSections:buildSections};\n})();\n";</script>
 <script>/* PRD 查看器单一渲染源（编辑版与查看版共用，禁止在两处分别维护） */
 (function () {
   const CSS = `
@@ -931,7 +943,17 @@
   #sidebar a.active{color:#fff;border-left-color:var(--primary);background:var(--panel2)}
   #sidebar .iface{font-size:12.5px;color:var(--accent);padding:8px 18px 3px;font-weight:600}
   #sidebar .feat{padding-left:32px;font-size:12.5px}
-  #main{flex:1;padding:36px 48px 120px;max-width:980px}
+  #main{flex:1;min-width:0;padding:36px 40px 120px;max-width:960px}
+  #protoPanel{width:46vw;min-width:420px;max-width:760px;flex-shrink:0;height:100vh;position:sticky;top:0;background:var(--panel);border-left:1px solid var(--line);display:none;flex-direction:column}
+  #protoPanel.on{display:flex}
+  #protoPanel .pp-head{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+  #protoPanel .pp-head b{color:var(--text);font-weight:600;font-size:13px}
+  #protoPanel .pp-head .pp-path{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #protoPanel .pp-head a{color:var(--accent);text-decoration:none;white-space:nowrap}
+  #protoPanel iframe{flex:1;width:100%;border:0;background:#fff}
+  #protoPanel .pp-empty{flex:1;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;padding:30px;text-align:center}
+  @media (max-width:1280px){#protoPanel{width:40vw;min-width:360px}#main{padding:30px 28px 100px}}
+  @media (max-width:1024px){#protoPanel{display:none!important}#main{max-width:100%}}
   section{display:none}
   h2{font-size:22px;margin-bottom:6px}
   h3{font-size:16px;margin:28px 0 10px;color:#fff}
@@ -1128,8 +1150,8 @@
 
     function protoBlock(p){
       if(!p||!p.url) return '<div class="sub">（无独立原型）</div>';
-      return '<a class="proto" target="_blank" href="'+p.url+'">🔗 查看界面原型（高保真）&nbsp;<span style="color:#5b6378">'+esc(p.anchor||'')+'</span></a>'+
-        (p.note?'<div class="sub" style="margin:4px 0 0">'+esc(p.note)+'</div>':'');
+      return '<a class="proto" target="_blank" href="'+p.url+'">↗ 新窗口打开高保真原型&nbsp;<span style="color:#5b6378">'+esc(p.anchor||'')+'</span></a>'+
+        (p.note?'<div class="sub" style="margin:4px 0 0">'+esc(p.note)+'（右侧可直接操作预览）</div>':'');
     }
     function featureModes(f){
       const keys=Object.keys(f.modes||{});
@@ -1175,7 +1197,7 @@
 
   function mount(D, opts){
     opts = opts || {};
-    const root=opts.rootId?document.getElementById(opts.rootId):document;
+    const root=opts.root||(opts.rootId?document.getElementById(opts.rootId):document);
     const sidebar=root.querySelector('.pv-sidebar, #sidebar');
     const main=root.querySelector('.pv-main, #main');
     sidebar.querySelector('.brand h1').textContent=D.meta.name;
@@ -1193,9 +1215,48 @@
     const tree=sidebar.querySelector('#navTree');
     tree.innerHTML=nh;
 
+    /* 右侧原型面板：由当前导航自动推导模块/页面，嵌入同仓托管的可交互原型 */
+    const base=(opts&&opts.protoBase)||'assets/prototype.html';
+    let panel=root.querySelector('#protoPanel');
+    if(!panel){
+      panel=document.createElement('aside');
+      panel.id='protoPanel';
+      panel.innerHTML='<div class="pp-head"><b>🖥 界面原型</b><span class="pp-path"></span><a target="_blank" class="pp-open">新窗口 ↗</a></div><div class="pp-body" style="flex:1;display:flex;flex-direction:column;min-height:0"></div>';
+      (root.nodeType===9?document.body:root).appendChild(panel);
+    }
+    const ppBody=panel.querySelector('.pp-body'), ppPath=panel.querySelector('.pp-path'), ppOpen=panel.querySelector('.pp-open');
+    function protoTarget(t){
+      if(t==='common') return null;
+      const map={login:{mod:'login',page:'',name:D.login.name},center:{mod:'user',page:'',name:D.center.name},admin:{mod:'admin',page:'users',name:D.admin.name}};
+      let info=null;
+      if(map[t]){ info=map[t]; }
+      else{
+        const m=String(t).match(/^(login|center|admin)-(.*)$/);
+        if(m){ info=Object.assign({},map[m[1]]); info.feat=D[m[1]].features[m[2]]; }
+      }
+      if(!info) return null;
+      return info;
+    }
+    let lastSrc='';
+    function syncProto(t){
+      const info=protoTarget(t);
+      if(!info){ panel.classList.remove('on'); return; }
+      panel.classList.add('on');
+      const src=base+'?pv='+info.mod+(info.page?':'+info.page:'')+'&t='+encodeURIComponent(t)+'&v=1';
+      const pathTxt=info.feat?info.name+' → '+info.feat.name:info.name+' · 界面总览';
+      if(ppPath.textContent!==pathTxt) ppPath.textContent=pathTxt;
+      ppOpen.href=src;
+      if(src!==lastSrc){
+        lastSrc=src;
+        ppBody.innerHTML='<iframe title="界面原型" src="'+src+'"></iframe>';
+      }
+    }
+
     function show(t){
-      main.innerHTML=sections[t]?sections[t]():sections['common']();
+      t=sections[t]?t:'common';
+      main.innerHTML=sections[t]();
       tree.querySelectorAll('a').forEach(a=>a.classList.toggle('active',a.dataset.t===t));
+      syncProto(t);
       main.scrollTop?main.scrollTop=0:window.scrollTo(0,0);
     }
     tree.onclick=e=>{const a=e.target.closest('a');if(a&&a.dataset.t){if(opts.onNavigate)opts.onNavigate(a.dataset.t);else location.hash=a.dataset.t;}};
@@ -1229,42 +1290,17 @@ function applyData(silent){
     const d = JSON.parse(editor.value);
     if(!d.meta||!d.common||!d.interfaces&&(!d.login||!d.center||!d.admin)) throw new Error('缺少必要结构（meta/common/login/center/admin）');
     DATA = d;
-    const nav=document.getElementById('pvRoot').querySelector('#navTree');
-    nav.innerHTML='';
-    window.PRD_VIEWER.mount(DATA, {rootId:null});
-    // mount 默认查找 document 级别；上面手动挂载见下方
+    mountPreview();
     if(!silent) status('已应用并重新渲染', 'ok');
   }catch(e){
     status('JSON 错误，未应用：'+e.message, 'err');
   }
 }
-/* 预览挂载：限定在 #pvRoot 内 */
+/* 预览挂载：直接复用查看器单一渲染源（含右侧原型面板），限定在 #pvRoot 内 */
 function mountPreview(){
-  const D=DATA, root=document.getElementById('pvRoot');
-  root.querySelector('.brand h1').textContent=D.meta.name;
-  root.querySelector('.brand .ver').textContent=D.meta.version+' · '+D.meta.updatedAt;
-  root.querySelector('.updated').textContent=D.meta.owner+' · '+D.meta.sourceDoc;
-  const sections=window.PRD_VIEWER.buildSections(D, window.marked);
-  const tree=root.querySelector('#navTree');
-  const main=root.querySelector('#main');
-  const ifaces=[['login',D.login],['center',D.center],['admin',D.admin]];
-  let nh='<a data-t="common">📐 通用规则</a>';
-  ifaces.forEach(([key,I])=>{
-    nh+='<div class="iface">'+I.name+'</div><a class="feat" data-t="'+key+'">界面总览</a>';
-    Object.keys(I.features).forEach(fk=>{nh+='<a class="feat" data-t="'+key+'-'+fk+'">'+I.features[fk].name+'</a>';});
-  });
-  tree.innerHTML=nh;
-  let api=null;
-  function renderMermaid(){ /* 编辑预览中流程图以文本展示，避免加载外部库；查看版会懒加载 mermaid */ }
-  function show(t){
-    main.innerHTML=sections[t]?sections[t]():sections['common']();
-    tree.querySelectorAll('a').forEach(a=>a.classList.toggle('active',a.dataset.t===t));
-    renderMermaid();
-  }
-  tree.onclick=e=>{const a=e.target.closest('a');if(a&&a.dataset.t)show(a.dataset.t);};
-  main.addEventListener('click',e=>{const b=e.target.closest('[data-back]');if(b)show(b.dataset.back);});
-  show('common');
-  api={show}; window._pvApi=api;
+  const root=document.getElementById('pvRoot');
+  const protoBase='https://daijiaqi77.github.io/galbot-admin-prd/assets/prototype.html';
+  window._pvApi=window.PRD_VIEWER.mount(DATA,{root:root,protoBase:protoBase,onNavigate:null});
 }
 mountPreview();
 

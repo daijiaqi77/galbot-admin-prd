@@ -21,7 +21,17 @@
   #sidebar a.active{color:#fff;border-left-color:var(--primary);background:var(--panel2)}
   #sidebar .iface{font-size:12.5px;color:var(--accent);padding:8px 18px 3px;font-weight:600}
   #sidebar .feat{padding-left:32px;font-size:12.5px}
-  #main{flex:1;padding:36px 48px 120px;max-width:980px}
+  #main{flex:1;min-width:0;padding:36px 40px 120px;max-width:960px}
+  #protoPanel{width:46vw;min-width:420px;max-width:760px;flex-shrink:0;height:100vh;position:sticky;top:0;background:var(--panel);border-left:1px solid var(--line);display:none;flex-direction:column}
+  #protoPanel.on{display:flex}
+  #protoPanel .pp-head{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+  #protoPanel .pp-head b{color:var(--text);font-weight:600;font-size:13px}
+  #protoPanel .pp-head .pp-path{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #protoPanel .pp-head a{color:var(--accent);text-decoration:none;white-space:nowrap}
+  #protoPanel iframe{flex:1;width:100%;border:0;background:#fff}
+  #protoPanel .pp-empty{flex:1;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;padding:30px;text-align:center}
+  @media (max-width:1280px){#protoPanel{width:40vw;min-width:360px}#main{padding:30px 28px 100px}}
+  @media (max-width:1024px){#protoPanel{display:none!important}#main{max-width:100%}}
   section{display:none}
   h2{font-size:22px;margin-bottom:6px}
   h3{font-size:16px;margin:28px 0 10px;color:#fff}
@@ -738,96 +748,95 @@
           "overview": "表头「状态」▾ 下拉：全部 / 使用中 / 禁用；选择后按状态过滤并重置第 1 页。",
           "requirements": [
             "状态标签颜色：使用中绿色、禁用红色。"
-          ],
-          "prototype": {},
-          "modes": {}
+          ]
         },
-        "a3": {
-          "id": "a3",
-          "name": "添加用户",
-          "prd": {
-            "overview": "点「+ 添加用户」打开弹窗，顶部只读展示自动生成的模拟 UID；成功后新行追加末位、分页自动跳到末页，新行操作列自带 编辑 / 禁用 / 删除。",
-            "requirements": [
-              "字段（按行）：① 姓名*、出生日期*（日期选择器，不可晚于今天）、手机号* ② 邮箱、所在公司 ③ 所在地区（省 / 直辖市 + 市，两级到市，与个人中心同一套区划）。",
-              "无状态选择、无禁用原因、无角色、无等级；新建账号一律「使用中」。",
-              "姓名、出生日期、手机号三项必填（红星标识）；手机号占位「请输入中国大陆手机号」。",
-              "校验：姓名空 → 「请输入姓名」；超长 / 非法字符 → 「姓名仅支持中文、字母或数字，且不超过 10 个字符」；出生日期空 → 「请选择出生日期」；手机号空 → 「请输入中国大陆手机号」。",
-              "管理员代建账号姓名可空（显 —），该用户首次登录后仍须在个人中心完善姓名与出生日期。"
-            ]
-          },
-          "prototype": {},
-          "modes": {}
-        },
-        "a4": {
-          "id": "a4",
-          "name": "编辑用户",
-          "prd": {
-            "overview": "点操作列「编辑」打开弹窗，UID 与所点行一致并只读；布局同添加弹窗。保存后列表单元格与展开详情同步更新，手机号按全号写回。",
-            "requirements": [
-              "无角色、无等级、无国际区号、无状态选择、无禁用原因（状态唯一入口是操作列）。",
-              "三项必填校验与添加弹窗一致；姓名限 1–10 字符。",
-              "出生日期：管理员可代填 / 修改并直接写回，不受 30 天冷却、不触发年龄提示 / 拦截（年龄约束仍在用户本人侧生效）。",
-              "地区：切省重置市级下拉；历史脏数据以「其他 / 其他」兜底；保存拼接「省 · 市」。"
-            ]
-          },
-          "prototype": {},
-          "modes": {}
-        },
-        "a5": {
-          "id": "a5",
-          "name": "禁用账号（小窗填写原因）",
-          "prd": {
-            "overview": "点操作列「禁用」弹出禁用原因小窗（宽 420px），不再在详情区展开输入。原因必填、≤100 字。",
-            "requirements": [
-              "小窗文案明确：「禁用后该用户将无法登录平台，且所有需要登录后使用的功能均不可使用。」",
-              "原因为空点确认：行内红字「请填写禁用原因」，弹窗不关闭。",
-              "确认后：列表状态变红「禁用」、操作列按钮变绿色「恢复」、详情顶部状态行显禁用标签 + 原因。",
-              "禁用不清除用户资料 / 权益；与用户侧「限制使用」相互独立、可并存。"
-            ]
-          },
-          "prototype": {},
-          "modes": {}
-        },
-        "a6": {
-          "id": "a6",
-          "name": "恢复账号",
-          "prd": {
-            "overview": "点绿色「恢复」后无需填写理由、无二次弹窗，立即恢复：状态回「使用中」、详情禁用原因移除、按钮切回「禁用」；权益延续禁用前状态。",
-            "requirements": [],
-            "prototype": {},
-            "modes": {}
-          },
-          "a7": {
-            "id": "a7",
-            "name": "删除账号",
-            "prd": {
-              "overview": "点操作列「删除」弹出二次确认，确认后用户行与其详情行同时移除，分页收回。属高风险操作。",
-              "requirements": [
-                "确认文案：「确认删除用户『姓名』（用户ID）？此操作不可恢复。」",
-                "操作列按钮点击 stopPropagation，不触发行展开。"
-              ]
-            },
-            "prototype": {},
-            "modes": {}
-          },
-          "a8": {
-            "id": "a8",
-            "name": "展开详情",
-            "prd": {
-              "overview": "点击行体在下方展开 / 收起详情面板。一期仅「基础信息」可编辑落地；L1 开发信息、L2 项目授权详情为原型保留。",
-              "requirements": [
-                "基础信息布局：第一行姓名、出生日期（新用户首次展开显灰色「暂未填写」）；第二行手机号全号、邮箱。",
-                "详情面板内无任何操作按钮。",
-                "L1：研发 / 销售 / 运维三类的订阅档位、开通 / 到期时间、认证等级（待上线）。",
-                "L2：授权项目、开发包、组织、角色、期限、状态；无授权显「暂无 L2 项目授权」（待开发）。"
-              ]
-            },
-            "prototype": {},
-            "modes": {}
-          }
-        }
+        "prototype": {},
+        "modes": {}
       },
-      "changelog": []
+      "a3": {
+        "id": "a3",
+        "name": "添加用户",
+        "prd": {
+          "overview": "点「+ 添加用户」打开弹窗，顶部只读展示自动生成的模拟 UID；成功后新行追加末位、分页自动跳到末页，新行操作列自带 编辑 / 禁用 / 删除。",
+          "requirements": [
+            "字段（按行）：① 姓名*、出生日期*（日期选择器，不可晚于今天）、手机号* ② 邮箱、所在公司 ③ 所在地区（省 / 直辖市 + 市，两级到市，与个人中心同一套区划）。",
+            "无状态选择、无禁用原因、无角色、无等级；新建账号一律「使用中」。",
+            "姓名、出生日期、手机号三项必填（红星标识）；手机号占位「请输入中国大陆手机号」。",
+            "校验：姓名空 → 「请输入姓名」；超长 / 非法字符 → 「姓名仅支持中文、字母或数字，且不超过 10 个字符」；出生日期空 → 「请选择出生日期」；手机号空 → 「请输入中国大陆手机号」。",
+            "管理员代建账号姓名可空（显 —），该用户首次登录后仍须在个人中心完善姓名与出生日期。"
+          ]
+        },
+        "prototype": {},
+        "modes": {}
+      },
+      "a4": {
+        "id": "a4",
+        "name": "编辑用户",
+        "prd": {
+          "overview": "点操作列「编辑」打开弹窗，UID 与所点行一致并只读；布局同添加弹窗。保存后列表单元格与展开详情同步更新，手机号按全号写回。",
+          "requirements": [
+            "无角色、无等级、无国际区号、无状态选择、无禁用原因（状态唯一入口是操作列）。",
+            "三项必填校验与添加弹窗一致；姓名限 1–10 字符。",
+            "出生日期：管理员可代填 / 修改并直接写回，不受 30 天冷却、不触发年龄提示 / 拦截（年龄约束仍在用户本人侧生效）。",
+            "地区：切省重置市级下拉；历史脏数据以「其他 / 其他」兜底；保存拼接「省 · 市」。"
+          ]
+        },
+        "prototype": {},
+        "modes": {}
+      },
+      "a5": {
+        "id": "a5",
+        "name": "禁用账号（小窗填写原因）",
+        "prd": {
+          "overview": "点操作列「禁用」弹出禁用原因小窗（宽 420px），不再在详情区展开输入。原因必填、≤100 字。",
+          "requirements": [
+            "小窗文案明确：「禁用后该用户将无法登录平台，且所有需要登录后使用的功能均不可使用。」",
+            "原因为空点确认：行内红字「请填写禁用原因」，弹窗不关闭。",
+            "确认后：列表状态变红「禁用」、操作列按钮变绿色「恢复」、详情顶部状态行显禁用标签 + 原因。",
+            "禁用不清除用户资料 / 权益；与用户侧「限制使用」相互独立、可并存。"
+          ]
+        },
+        "prototype": {},
+        "modes": {}
+      },
+      "a6": {
+        "id": "a6",
+        "name": "恢复账号",
+        "prd": {
+          "overview": "点绿色「恢复」后无需填写理由、无二次弹窗，立即恢复：状态回「使用中」、详情禁用原因移除、按钮切回「禁用」；权益延续禁用前状态。",
+          "requirements": []
+        },
+        "prototype": {},
+        "modes": {}
+      },
+      "a7": {
+        "id": "a7",
+        "name": "删除账号",
+        "prd": {
+          "overview": "点操作列「删除」弹出二次确认，确认后用户行与其详情行同时移除，分页收回。属高风险操作。",
+          "requirements": [
+            "确认文案：「确认删除用户『姓名』（用户ID）？此操作不可恢复。」",
+            "操作列按钮点击 stopPropagation，不触发行展开。"
+          ]
+        },
+        "prototype": {},
+        "modes": {}
+      },
+      "a8": {
+        "id": "a8",
+        "name": "展开详情",
+        "prd": {
+          "overview": "点击行体在下方展开 / 收起详情面板。一期仅「基础信息」可编辑落地；L1 开发信息、L2 项目授权详情为原型保留。",
+          "requirements": [
+            "基础信息布局：第一行姓名、出生日期（新用户首次展开显灰色「暂未填写」）；第二行手机号全号、邮箱。",
+            "详情面板内无任何操作按钮。",
+            "L1：研发 / 销售 / 运维三类的订阅档位、开通 / 到期时间、认证等级（待上线）。",
+            "L2：授权项目、开发包、组织、角色、期限、状态；无授权显「暂无 L2 项目授权」（待开发）。"
+          ]
+        },
+        "prototype": {},
+        "modes": {}
+      }
     }
   }
 };</script>
@@ -850,7 +859,17 @@
   #sidebar a.active{color:#fff;border-left-color:var(--primary);background:var(--panel2)}
   #sidebar .iface{font-size:12.5px;color:var(--accent);padding:8px 18px 3px;font-weight:600}
   #sidebar .feat{padding-left:32px;font-size:12.5px}
-  #main{flex:1;padding:36px 48px 120px;max-width:980px}
+  #main{flex:1;min-width:0;padding:36px 40px 120px;max-width:960px}
+  #protoPanel{width:46vw;min-width:420px;max-width:760px;flex-shrink:0;height:100vh;position:sticky;top:0;background:var(--panel);border-left:1px solid var(--line);display:none;flex-direction:column}
+  #protoPanel.on{display:flex}
+  #protoPanel .pp-head{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+  #protoPanel .pp-head b{color:var(--text);font-weight:600;font-size:13px}
+  #protoPanel .pp-head .pp-path{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #protoPanel .pp-head a{color:var(--accent);text-decoration:none;white-space:nowrap}
+  #protoPanel iframe{flex:1;width:100%;border:0;background:#fff}
+  #protoPanel .pp-empty{flex:1;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;padding:30px;text-align:center}
+  @media (max-width:1280px){#protoPanel{width:40vw;min-width:360px}#main{padding:30px 28px 100px}}
+  @media (max-width:1024px){#protoPanel{display:none!important}#main{max-width:100%}}
   section{display:none}
   h2{font-size:22px;margin-bottom:6px}
   h3{font-size:16px;margin:28px 0 10px;color:#fff}
@@ -1047,8 +1066,8 @@
 
     function protoBlock(p){
       if(!p||!p.url) return '<div class="sub">（无独立原型）</div>';
-      return '<a class="proto" target="_blank" href="'+p.url+'">🔗 查看界面原型（高保真）&nbsp;<span style="color:#5b6378">'+esc(p.anchor||'')+'</span></a>'+
-        (p.note?'<div class="sub" style="margin:4px 0 0">'+esc(p.note)+'</div>':'');
+      return '<a class="proto" target="_blank" href="'+p.url+'">↗ 新窗口打开高保真原型&nbsp;<span style="color:#5b6378">'+esc(p.anchor||'')+'</span></a>'+
+        (p.note?'<div class="sub" style="margin:4px 0 0">'+esc(p.note)+'（右侧可直接操作预览）</div>':'');
     }
     function featureModes(f){
       const keys=Object.keys(f.modes||{});
@@ -1094,7 +1113,7 @@
 
   function mount(D, opts){
     opts = opts || {};
-    const root=opts.rootId?document.getElementById(opts.rootId):document;
+    const root=opts.root||(opts.rootId?document.getElementById(opts.rootId):document);
     const sidebar=root.querySelector('.pv-sidebar, #sidebar');
     const main=root.querySelector('.pv-main, #main');
     sidebar.querySelector('.brand h1').textContent=D.meta.name;
@@ -1112,9 +1131,48 @@
     const tree=sidebar.querySelector('#navTree');
     tree.innerHTML=nh;
 
+    /* 右侧原型面板：由当前导航自动推导模块/页面，嵌入同仓托管的可交互原型 */
+    const base=(opts&&opts.protoBase)||'assets/prototype.html';
+    let panel=root.querySelector('#protoPanel');
+    if(!panel){
+      panel=document.createElement('aside');
+      panel.id='protoPanel';
+      panel.innerHTML='<div class="pp-head"><b>🖥 界面原型</b><span class="pp-path"></span><a target="_blank" class="pp-open">新窗口 ↗</a></div><div class="pp-body" style="flex:1;display:flex;flex-direction:column;min-height:0"></div>';
+      (root.nodeType===9?document.body:root).appendChild(panel);
+    }
+    const ppBody=panel.querySelector('.pp-body'), ppPath=panel.querySelector('.pp-path'), ppOpen=panel.querySelector('.pp-open');
+    function protoTarget(t){
+      if(t==='common') return null;
+      const map={login:{mod:'login',page:'',name:D.login.name},center:{mod:'user',page:'',name:D.center.name},admin:{mod:'admin',page:'users',name:D.admin.name}};
+      let info=null;
+      if(map[t]){ info=map[t]; }
+      else{
+        const m=String(t).match(/^(login|center|admin)-(.*)$/);
+        if(m){ info=Object.assign({},map[m[1]]); info.feat=D[m[1]].features[m[2]]; }
+      }
+      if(!info) return null;
+      return info;
+    }
+    let lastSrc='';
+    function syncProto(t){
+      const info=protoTarget(t);
+      if(!info){ panel.classList.remove('on'); return; }
+      panel.classList.add('on');
+      const src=base+'?pv='+info.mod+(info.page?':'+info.page:'')+'&t='+encodeURIComponent(t)+'&v=1';
+      const pathTxt=info.feat?info.name+' → '+info.feat.name:info.name+' · 界面总览';
+      if(ppPath.textContent!==pathTxt) ppPath.textContent=pathTxt;
+      ppOpen.href=src;
+      if(src!==lastSrc){
+        lastSrc=src;
+        ppBody.innerHTML='<iframe title="界面原型" src="'+src+'"></iframe>';
+      }
+    }
+
     function show(t){
-      main.innerHTML=sections[t]?sections[t]():sections['common']();
+      t=sections[t]?t:'common';
+      main.innerHTML=sections[t]();
       tree.querySelectorAll('a').forEach(a=>a.classList.toggle('active',a.dataset.t===t));
+      syncProto(t);
       main.scrollTop?main.scrollTop=0:window.scrollTo(0,0);
     }
     tree.onclick=e=>{const a=e.target.closest('a');if(a&&a.dataset.t){if(opts.onNavigate)opts.onNavigate(a.dataset.t);else location.hash=a.dataset.t;}};

@@ -440,7 +440,9 @@ window.PRD_DATA = {
       },
       a2: {
         id: 'a2', name: '状态筛选',
-        prd: { overview: '表头「状态」▾ 下拉：全部 / 使用中 / 禁用；选择后按状态过滤并重置第 1 页。', requirements: ['状态标签颜色：使用中绿色、禁用红色。'], prototype: {}, modes: {}
+        prd: { overview: '表头「状态」▾ 下拉：全部 / 使用中 / 禁用；选择后按状态过滤并重置第 1 页。', requirements: ['状态标签颜色：使用中绿色、禁用红色。'] },
+        prototype: {},
+        modes: {}
       },
       a3: {
         id: 'a3', name: '添加用户',
@@ -487,7 +489,9 @@ window.PRD_DATA = {
       },
       a6: {
         id: 'a6', name: '恢复账号',
-        prd: { overview: '点绿色「恢复」后无需填写理由、无二次弹窗，立即恢复：状态回「使用中」、详情禁用原因移除、按钮切回「禁用」；权益延续禁用前状态。', requirements: [], prototype: {}, modes: {}
+        prd: { overview: '点绿色「恢复」后无需填写理由、无二次弹窗，立即恢复：状态回「使用中」、详情禁用原因移除、按钮切回「禁用」；权益延续禁用前状态。', requirements: [] },
+        prototype: {},
+        modes: {}
       },
       a7: {
         id: 'a7', name: '删除账号',
@@ -513,8 +517,6 @@ window.PRD_DATA = {
         modes: {}
       }
     }
-    },
-    changelog: []
-  }
   }
 };
+
